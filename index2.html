@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WarehouseSpare | Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2A5C99;
+            --primary-light: #4a7cb9;
+            --secondary: #FF6B35;
+            --accent: #FFE74C;
+            --text: #2D2D2D;
+            --text-light: #5E5E5E;
+            --bg: #F8F9FA;
+            --card-bg: #FFFFFF;
+            --border: #E0E0E0;
+            --success: #28A745;
+            --warning: #FFC107;
+            --danger: #DC3545;
+            --info: #17A2B8;
+        }
+
+        [data-theme="dark"] {
+            --primary: #1E3A8A; 
+            --primary-light: #3B5998;
+            --secondary: #FF7B4D;
+            --accent: #FFE74C;
+            --text: #F0F0F0;
+            --text-light: #CCCCCC;
+            --bg: #121F3D;
+            --card-bg: #1A2C4D;
+            --border: #2D3A5A;
+            --success: #38A169;
+            --warning: #D69E2E;
+            --danger: #E53E3E;
+            --info: #3182CE;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--accent);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Main Layout */
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: var(--card-bg);
+            border-right: 1px solid var(--border);
+            height: calc(100vh - 60px);
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            transform: translateX(0);
+            z-index: 90;
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(-250px);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 1rem 0;
+        }
+
+        .menu-title {
+            padding: 0.8rem 1.5rem;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--text-light);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .menu-item {
+            margin: 0.2rem 0;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1.5rem;
+            color: var(--text);
+            text-decoration: none;
+            gap: 12px;
+            font-weight: 500;
+            border-left: 3px solid transparent;
+        }
+
+        .menu-link:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .menu-link.active {
+            background-color: rgba(42, 92, 153, 0.1);
+            border-left: 3px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .menu-icon {
+            font-size: 1.3rem;
+        }
+
+        .submenu {
+            list-style: none;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background-color: rgba(0, 0, 0, 0.03);
+        }
+
+        .submenu.show {
+            max-height: 500px;
+        }
+
+        .submenu .menu-link {
+            padding-left: 3rem;
+            font-weight: 400;
+        }
+
+        .submenu-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .submenu-arrow {
+            transition: transform 0.3s ease;
+        }
+
+        .submenu-arrow.rotated {
+            transform: rotate(90deg);
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            height: calc(100vh - 60px);
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 500;
+            color: var(--primary);
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--text-light);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--primary);
+        }
+
+        .breadcrumb .separator {
+            font-size: 1rem;
+        }
+
+        /* Dashboard Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .card-icon.primary {
+            background-color: rgba(42, 92, 153, 0.1);
+            color: var(--primary);
+        }
+
+        .card-icon.success {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--success);
+        }
+
+        .card-icon.warning {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: var(--warning);
+        }
+
+        .card-icon.danger {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--danger);
+        }
+
+        .card-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-footer {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .card-footer.positive {
+            color: var(--success);
+        }
+
+        .card-footer.negative {
+            color: var(--danger);
+        }
+
+        /* Table Styles */
+        .table-container {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            overflow-x: auto;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .table-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 0.8rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 500;
+            color: var(--text-light);
+            background-color: rgba(0, 0, 0, 0.03);
+        }
+
+        tr:hover {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-badge.success {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--success);
+        }
+
+        .status-badge.warning {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: var(--warning);
+        }
+
+        .status-badge.danger {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--danger);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 1rem;
+            gap: 5px;
+        }
+
+        .pagination button {
+            padding: 0.5rem 0.8rem;
+            border: 1px solid var(--border);
+            background-color: var(--card-bg);
+            color: var(--text);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .pagination button.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .pagination button:hover:not(.active) {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        /* Button Styles */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+        }
+
+        .btn-lg {
+            padding: 0.8rem 1.4rem;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-light);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #FF804D;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #C82333;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background-color: #E0A800;
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            padding: 0;
+            justify-content: center;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            transform: translateY(-20px);
+            transition: transform 0.3s;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.show .modal {
+            transform: translateY(0);
+        }
+
+        .modal-sm {
+            width: 400px;
+        }
+
+        .modal-lg {
+            width: 800px;
+        }
+
+        .modal-header {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 500;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background-color: var(--card-bg);
+            color: var(--text);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(42, 92, 153, 0.2);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        /* Loading Animation */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .loading-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .sidebar {
+                position: fixed;
+                top: 60px;
+                left: 0;
+                z-index: 90;
+                transform: translateX(-250px);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-sm, .modal-lg {
+                width: 95%;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <span class="material-icons">menu</span>
+            </button>
+            <span class="material-icons logo-icon">warehouse</span>
+            <h1>WarehouseSpare</h1>
+        </div>
+        <div class="header-actions">
+            <button class="theme-toggle" id="themeToggle">
+                <span class="material-icons">brightness_4</span>
+            </button>
+            <div class="user-profile">
+                <div class="user-avatar">AD</div>
+                <span class="material-icons">arrow_drop_down</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <ul class="sidebar-menu">
+                <li class="menu-title">Main</li>
+                <li class="menu-item">
+                    <a href="#" class="menu-link active">
+                        <span class="material-icons menu-icon">dashboard</span>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                
+                <li class="menu-title">Management</li>
+                <li class="menu-item">
+                    <div class="menu-link">
+                        <span class="material-icons menu-icon">inventory_2</span>
+                        <span>Sparepart</span>
+                        <span class="material-icons submenu-arrow">chevron_right</span>
+                    </div>
+                    <ul class="submenu">
+                        <li class="menu-item">
+                            <a href="#" class="menu-link">Daftar Sparepart</a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#" class="menu-link">Stok Masuk</a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#" class="menu-link">Stok Keluar</a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#" class="menu-link">Stok Minimum</a>
+                        </li>
+                    </ul>
+                </li>
+                
+                <li class="menu-item">
+                    <a href="#" class="menu-link">
+                        <span class="material-icons menu-icon">receipt_long</span>
+                        <span>Transaksi</span>
+                    </a>
+                </li>
+                
+                <li class="menu-item">
+                    <div class="menu-link">
+                        <span class="material-icons menu-icon">assessment</span>
+                        <span>Laporan</span>
+                        <span class="material-icons submenu-arrow">chevron_right</span>
+                    </div>
+                    <ul class="submenu">
+                        <li class="menu-item">
+                            <a href="#" class="menu-link">Laporan Bulanan</a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#" class="menu-link">Laporan Tahunan</a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#" class="menu-link">Laporan Sparepart</a>
+                        </li>
+                    </ul>
+                </li>
+                
+                <li class="menu-title">System</li>
+                <li class="menu-item">
+                    <a href="#" class="menu-link">
+                        <span class="material-icons menu-icon">people</span>
+                        <span>Pengguna</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#" class="menu-link">
+                        <span class="material-icons menu-icon">settings</span>
+                        <span>Pengaturan</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <h1 class="page-title">Dashboard</h1>
+                <div class="breadcrumb">
+                    <a href="#">Home</a>
+                    <span class="material-icons separator">chevron_right</span>
+                    <span>Dashboard</span>
+                </div>
+            </div>
+
+            <!-- Dashboard Cards -->
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Total Sparepart</h3>
+                        <div class="card-icon primary">
+                            <span class="material-icons">inventory</span>
+                        </div>
+                    </div>
+                    <div class="card-value">1,248</div>
+                    <div class="card-footer positive">
+                        <span class="material-icons">trending_up</span>
+                        <span>12% from last month</span>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Stok Minimum</h3>
+                        <div class="card-icon warning">
+                            <span class="material-icons">warning</span>
+                        </div>
+                    </div>
+                    <div class="card-value">36</div>
+                    <div class="card-footer negative">
+                        <span class="material-icons">trending_down</span>
+                        <span>5% from last month</span>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Transaksi Hari Ini</h3>
+                        <div class="card-icon success">
+                            <span class="material-icons">receipt</span>
+                        </div>
+                    </div>
+                    <div class="card-value">48</div>
+                    <div class="card-footer positive">
+                        <span class="material-icons">trending_up</span>
+                        <span>8% from yesterday</span>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Permintaan</h3>
+                        <div class="card-icon danger">
+                            <span class="material-icons">assignment</span>
+                        </div>
+                    </div>
+                    <div class="card-value">12</div>
+                    <div class="card-footer positive">
+                        <span class="material-icons">trending_up</span>
+                        <span>20% from last week</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Transactions Table -->
+            <div class="table-container">
+                <div class="table-header">
+                    <h3 class="table-title">Sparepart Stok Minimum</h3>
+                    <div class="table-actions">
+                        <button class="btn btn-outline btn-sm">
+                            <span class="material-icons">file_download</span>
+                            <span>Export</span>
+                        </button>
+                        <button class="btn btn-primary btn-sm" id="addSparepartBtn">
+                            <span class="material-icons">add</span>
+                            <span>Tambah</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Kode</th>
+                            <th>Nama Sparepart</th>
+                            <th>Kategori</th>
+                            <th>Lokasi</th>
+                            <th>Stok</th>
+                            <th>Minimum</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>SP-001</td>
+                            <td>Bearing 6204ZZ</td>
+                            <td>Bearing</td>
+                            <td>Rak A-12</td>
+                            <td>3</td>
+                            <td>10</td>
+                            <td><span class="status-badge danger">Kritis</span></td>
+                            <td>
+                                <button class="btn btn-icon btn-sm btn-outline">
+                                    <span class="material-icons">edit</span>
+                                </button>
+                                <button class="btn btn-icon btn-sm btn-outline">
+                                    <span class="material-icons">delete</span>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>SP-005</td>
+                            <td>V-Belt A-45</td>
+                            <td>Belt</td>
+                            <td>Rak B-03</td>
+                            <td>5</td>
+                            <td>15</td>
+                            <td><span class="status-badge danger">Kritis</span></td>
+                            <td>
+                                <button class="btn btn-icon btn-sm btn-outline">
+                                    <span class="material-icons">edit</span>
+                                </button>
+                                <button class="btn btn-icon btn-sm btn-outline">
+                                    <span class="material-icons">delete</span>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>SP-012</td>
+                            <td>Oil Seal 25x42x7</td>
+                            <td>Seal</td>
+                            <td>Rak C-08</td>
+                            <td>8</td>
+                            <td>20</td>
+                            <td><span class="status-badge warning">Hati-hati</span></td>
+                            <td>
+                                <button class="btn btn-icon btn-sm btn-outline">
+                                    <span class="material-icons">edit</span>
+                                </button>
+                                <button class="btn btn-icon btn-sm btn-outline">
+                                    <span class="material-icons">delete</span>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>SP-018</td>
+                            <td>O-Ring 3mm</td>
+                            <td>Seal</td>
+                            <td>Rak D-15</td>
+                            <td>12</td>
+                            <td>30</td>
+                            <td><span class="status-badge warning">Hati-hati</span></td>
+                            <td>
+                                <button class="btn btn-icon btn-sm btn-outline">
+                                    <span class="material-icons">edit</span>
+                                </button>
+                                <button class="btn btn-icon btn-sm btn-outline">
+                                    <span class="material-icons">delete</span>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>SP-025</td>
+                            <td>Bolt M8x30</td>
+                            <td>Fastener</td>
+                            <td>Rak E-22</td>
+                            <td>25</td>
+                            <td>50</td>
+                            <td><span class="status-badge success">Aman</span></td>
+                            <td>
+                                <button class="btn btn-icon btn-sm btn-outline">
+                                    <span class="material-icons">edit</span>
+                                </button>
+                                <button class="btn btn-icon btn-sm btn-outline">
+                                    <span class="material-icons">delete</span>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="pagination">
+                    <button>&laquo;</button>
+                    <button class="active">1</button>
+                    <button>2</button>
+                    <button>3</button>
+                    <button>&raquo;</button>
+                </div>
+            </div>
+
+            <!-- Button Examples -->
+            <div class="table-container" style="margin-top: 1.5rem;">
+                <h3 class="table-title">Button Examples</h3>
+                <div style="display: flex; flex-wrap: wrap; gap: 10px; padding: 1rem 0;">
+                    <button class="btn btn-primary">
+                        <span class="material-icons">save</span>
+                        <span>Primary</span>
+                    </button>
+                    <button class="btn btn-secondary">
+                        <span class="material-icons">add</span>
+                        <span>Secondary</span>
+                    </button>
+                    <button class="btn btn-success">
+                        <span class="material-icons">check</span>
+                        <span>Success</span>
+                    </button>
+                    <button class="btn btn-danger">
+                        <span class="material-icons">delete</span>
+                        <span>Danger</span>
+                    </button>
+                    <button class="btn btn-warning">
+                        <span class="material-icons">warning</span>
+                        <span>Warning</span>
+                    </button>
+                    <button class="btn btn-outline">
+                        <span class="material-icons">edit</span>
+                        <span>Outline</span>
+                    </button>
+                    <button class="btn btn-primary btn-sm">
+                        <span class="material-icons">download</span>
+                        <span>Small</span>
+                    </button>
+                    <button class="btn btn-secondary btn-lg">
+                        <span class="material-icons">print</span>
+                        <span>Large</span>
+                    </button>
+                    <button class="btn btn-icon btn-primary">
+                        <span class="material-icons">search</span>
+                    </button>
+                    <button class="btn btn-icon btn-danger">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Sparepart Modal (Large) -->
+    <div class="modal-overlay" id="addSparepartModal">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h3 class="modal-title">Tambah Sparepart Baru</h3>
+                <button class="modal-close" id="closeAddModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Kode Sparepart</label>
+                            <input type="text" class="form-control" placeholder="SP-XXX">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Nama Sparepart</label>
+                            <input type="text" class="form-control" placeholder="Nama sparepart">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Kategori</label>
+                            <select class="form-control">
+                                <option value="">Pilih Kategori</option>
+                                <option value="bearing">Bearing</option>
+                                <option value="belt">Belt</option>
+                                <option value="seal">Seal</option>
+                                <option value="fastener">Fastener</option>
+                                <option value="electrical">Electrical</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Lokasi Gudang</label>
+                            <input type="text" class="form-control" placeholder="Rak A-12">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Stok Awal</label>
+                            <input type="number" class="form-control" placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Stok Minimum</label>
+                            <input type="number" class="form-control" placeholder="10">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Deskripsi</label>
+                        <textarea class="form-control" rows="3" placeholder="Deskripsi sparepart"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Gambar Sparepart</label>
+                        <input type="file" class="form-control">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelAddModal">Batal</button>
+                <button class="btn btn-primary">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal (Small) -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal modal-sm">
+            <div class="modal-header">
+                <h3 class="modal-title">Konfirmasi</h3>
+                <button class="modal-close" id="closeConfirmModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Apakah Anda yakin ingin menghapus sparepart ini?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelConfirmModal">Batal</button>
+                <button class="btn btn-danger">Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const themeToggle = document.getElementById('themeToggle');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const sidebar = document.getElementById('sidebar');
+        const addSparepartBtn = document.getElementById('addSparepartBtn');
+        const addSparepartModal = document.getElementById('addSparepartModal');
+        const closeAddModal = document.getElementById('closeAddModal');
+        const cancelAddModal = document.getElementById('cancelAddModal');
+        const confirmModal = document.getElementById('confirmModal');
+        const closeConfirmModal = document.getElementById('closeConfirmModal');
+        const cancelConfirmModal = document.getElementById('cancelConfirmModal');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const submenuToggles = document.querySelectorAll('.menu-item > .menu-link > .submenu-arrow');
+
+        // Theme Toggle
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            
+            // Update icon
+            const icon = themeToggle.querySelector('span');
+            icon.textContent = newTheme === 'light' ? 'brightness_4' : 'brightness_7';
+        });
+
+        // Mobile Menu Toggle
+        mobileMenuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('show');
+        });
+
+        // Submenu Toggle
+        submenuToggles.forEach(arrow => {
+            arrow.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const menuItem = arrow.closest('.menu-item');
+                const submenu = menuItem.querySelector('.submenu');
+                
+                arrow.classList.toggle('rotated');
+                submenu.classList.toggle('show');
+            });
+        });
+
+        // Show Add Sparepart Modal
+        addSparepartBtn.addEventListener('click', () => {
+            addSparepartModal.classList.add('show');
+        });
+
+        // Close Add Sparepart Modal
+        closeAddModal.addEventListener('click', () => {
+            addSparepartModal.classList.remove('show');
+        });
+
+        cancelAddModal.addEventListener('click', () => {
+            addSparepartModal.classList.remove('show');
+        });
+
+        // Show Confirm Modal (example)
+        document.querySelectorAll('.btn-outline .material-icons').forEach(btn => {
+            if (btn.textContent === 'delete') {
+                btn.closest('button').addEventListener('click', () => {
+                    confirmModal.classList.add('show');
+                });
+            }
+        });
+
+        // Close Confirm Modal
+        closeConfirmModal.addEventListener('click', () => {
+            confirmModal.classList.remove('show');
+        });
+
+        cancelConfirmModal.addEventListener('click', () => {
+            confirmModal.classList.remove('show');
+        });
+
+        // Close modals when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === addSparepartModal) {
+                addSparepartModal.classList.remove('show');
+            }
+            if (e.target === confirmModal) {
+                confirmModal.classList.remove('show');
+            }
+        });
+
+        // Loading overlay example
+        function showLoading() {
+            loadingOverlay.classList.add('show');
+            setTimeout(() => {
+                loadingOverlay.classList.remove('show');
+            }, 2000);
+        }
+
+        // Simulate loading
+        showLoading();
+
+        // Responsive sidebar
+        function handleResize() {
+            if (window.innerWidth > 992) {
+                sidebar.classList.remove('show');
+            }
+        }
+
+        window.addEventListener('resize', handleResize);
+
+        // Initialize DataTable (you would include the actual DataTables library in a real project)
+        console.log("DataTable would be initialized here with jQuery in a real project");
+    </script>
+</body>
+</html>
