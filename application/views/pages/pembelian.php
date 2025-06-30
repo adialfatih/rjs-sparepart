@@ -33,9 +33,10 @@
                             <th>Tanggal Nota</th>
                             <th>Tanggal Input</th>
                             <th>Nomor Nota / SJ</th>
-                            <th>Total Harga</th>
+                            <th>PPN</th>
+                            <th>PPh</th>
+                            <th>Total Harga Barang</th>
                             <th>Supplier</th>
-                            <th>Divisi</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -93,13 +94,22 @@
                                 <?php foreach($supplier->result() as $t){ echo "<option>".strtoupper($t->supp)."</option>"; }?>
                             </datalist>
                         </div>
+                    </div>
+                    <div class="form-row">
                         <div class="form-group">
-                            <label class="form-label">Divisi</label>
-                            <select class="form-control" id="divisiId">
-                                <option value="">Pilih Divisi</option>
-                                <option value="Gudang Weaving">Gudang Weaving</option>
-                                <option value="Gudang Spinning">Gudang Spinning</option>
-                                <option value="Pemeliharaan">Pemeliharaan</option>
+                            <label class="form-label">PPN (Nominal)</label>
+                            <input type="text" class="combobox-input" placeholder="Masukan Nominal PPN" id="noppn" onkeyup="formatRibuan(this)">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">PPH (Persen)</label>
+                            <input type="text" class="combobox-input" placeholder="Ex: 0.03% / 2%" id="nopph">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">PPH dibayar oleh</label>
+                            <select class="form-control" id="dibayarOleh">
+                                <option value="">Pilih</option>
+                                <option value="penjual">Supplier</option>
+                                <option value="pembeli">PT. Rindang Jati</option>
                             </select>
                         </div>
                     </div>
@@ -117,6 +127,8 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="form-row" style="margin-top:-5px;border-bottom:1px solid #000;">
                         <div class="form-group">
                             <label class="form-label">Jumlah</label>
                             <input type="text" class="form-control" id="jmlPcs" placeholder="Ex: 10-Kg, 100-Pcs">
@@ -124,6 +136,15 @@
                         <div class="form-group">
                             <label class="form-label">Harga /item</label>
                             <input type="text" class="form-control" id="hrgPcs" placeholder="Masukan Harga Satuan" onkeyup="formatRibuan(this)">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Divisi</label>
+                            <select class="form-control" id="divisiId">
+                                <option value="">Pilih Divisi</option>
+                                <option value="Gudang Weaving">Gudang Weaving</option>
+                                <option value="Gudang Spinning">Gudang Spinning</option>
+                                <option value="Pemeliharaan">Pemeliharaan</option>
+                            </select>
                         </div>
                         <div class="form-group2">
                             <label class="form-label">&nbsp;</label>

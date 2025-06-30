@@ -1,5 +1,58 @@
 pembatalan pembayaran yang cash #2424
-
+1. Detil riwayat penarikan belum dibuat
+2. 
 
 
 //PADA MAIN JS ADA KODE UNTUK URL CETAK PRINT
+
+
+
+create view v_onkantor2 as
+select
+detil_pembelian.id_detilpem,
+detil_pembelian.kode_beli,
+detil_pembelian.nama_sparepart,
+detil_pembelian.qty,
+detil_pembelian.satuan,
+detil_pembelian.harga_qty,
+detil_pembelian.total_harga,
+detil_pembelian.lokasi,
+detil_pembelian.untuk_divisi,
+pembelian.idpemb,
+pembelian.tgl_datang,
+pembelian.tgl_nota,
+pembelian.no_nota_sj,
+pembelian.supp,
+pembelian.untuk,
+pembelian.tgl_input,
+pembelian.yginput
+FROM detil_pembelian,pembelian
+WHERE detil_pembelian.kode_beli = pembelian.kode_beli
+AND detil_pembelian.lokasi = 'Kantor';
+
+
+CREATE VIEW view_stokwv AS
+SELECT 
+table_sparepart.id_sp,
+table_sparepart.kategori_sp,
+table_sparepart.nama_sparepart,
+table_sparepart.kodesp,
+table_sparepart.satuan_pemakaian,
+COUNT(stok_sparepart.kodesp) AS jml_stok,
+stok_sparepart.lokasi
+FROM table_sparepart,stok_sparepart 
+WHERE table_sparepart.kodesp=stok_sparepart.kodesp
+AND stok_sparepart.lokasi='Weaving';
+
+CREATE VIEW view_stoksp AS
+SELECT 
+table_sparepart.id_sp,
+table_sparepart.kategori_sp,
+table_sparepart.nama_sparepart,
+table_sparepart.kodesp,
+table_sparepart.satuan_pemakaian,
+COUNT(stok_sparepart.kodesp) AS jml_stok,
+stok_sparepart.lokasi
+FROM table_sparepart,stok_sparepart 
+WHERE table_sparepart.kodesp=stok_sparepart.kodesp
+AND stok_sparepart.lokasi='Spinning';

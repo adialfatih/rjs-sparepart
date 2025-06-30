@@ -11,8 +11,13 @@ $route['upload-image'] = 'Upload_image';
 $route['store-image'] = 'Upload_image/produk_upload';
 $route['daftar'] = 'beranda/daftar';
 $route['tarik/ke/spinning'] = 'beranda/kesp';
+$route['history/ke/spinning'] = 'showpage/rwyt_kesp';
+$route['history/ke/weaving'] = 'showpage/rwyt_kewv';
 $route['tarik/ke/weaving'] = 'beranda/kewv';
 $route['cobascan'] = 'beranda/cobascan';
+
+$route['gudang/stok/spinning'] = 'beranda/stoksp';
+$route['gudang/stok/weaving'] = 'beranda/stokwv';
 
 
 $route['qrcode'] = 'qrcode_generator';

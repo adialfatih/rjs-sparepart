@@ -230,6 +230,22 @@ class Data_model extends CI_Model{
       $decoded = json_decode($response, true);
       return $decoded ? $decoded : ['success' => false, 'message' => 'Respon tidak valid'];
   }
+  function parseInputForm($input) {
+      $input = trim($input);
+
+      if (substr($input, -1) === '%') {
+          // Jika input berakhiran dengan '%'
+          $input = str_replace(' ', '', $input); // Hapus semua spasi
+          $input = rtrim($input, '%'); // Hapus simbol %
+          $value = floatval($input);
+          return number_format($value, 2, '.', ''); // Format dengan 2 angka di belakang koma
+      } else {
+          // Jika input adalah nominal
+          $value = preg_replace('/[^\d]/', '', $input); // Hapus semua kecuali angka
+          return $value;
+      }
+  }
+
   
 }
 ?>

@@ -24,8 +24,8 @@ class Login extends CI_Controller
             if($cek_login->num_rows() == 1){
                 $dt = $cek_login->row_array();
                 $data_session = array(
-                    'id'        => $dt['id'],
-                    'nama'      => $dt['nama'],
+                    'id'        => $dt['iduser'],
+                    'nama'      => $dt['nama_user'],
                     'username'  => $dt['username'],
                     'password'  => $dt['password'],
                     'akses'     => $dt['akses'],

@@ -43,17 +43,11 @@
                             <a href="<?=base_url('sparepart/pembelian');?>" class="menu-link <?=$navigasi2=='pembelian' ? 'active':'';?>">Pembelian</a>
                         </li>
                         <li class="menu-item">
-                            <a href="#" class="menu-link">Daftar Sparepart</a>
-                        </li>
-                        <!-- <li class="menu-item">
-                            <a href="#" class="menu-link">Stok Masuk</a>
+                            <a href="<?=base_url('tarik/ke/spinning');?>" class="menu-link <?=$navigasi2=='tariksp' ? 'active':'';?><?=$navigasi2=='rtariksp' ? 'active':'';?>">Tarik Ke Spinning</a>
                         </li>
                         <li class="menu-item">
-                            <a href="#" class="menu-link">Stok Keluar</a>
+                            <a href="<?=base_url('tarik/ke/weaving');?>" class="menu-link <?=$navigasi2=='tarikwv' ? 'active':'';?><?=$navigasi2=='rtarikwv' ? 'active':'';?>">Tarik Ke Weaving</a>
                         </li>
-                        <li class="menu-item">
-                            <a href="#" class="menu-link">Stok Minimum</a>
-                        </li> -->
                     </ul>
                 </li>
                 <li class="menu-item">
@@ -64,33 +58,19 @@
                     </div>
                     <ul class="submenu <?=$navigasi=='gudang' ? 'show':'';?>">
                         <li class="menu-item">
-                            <a href="" class="menu-link <?=$navigasi2=='pembelian4' ? 'active':'';?>">Gudang Spinning</a>
+                            <a href="<?=base_url('gudang/stok/spinning');?>" class="menu-link <?=$navigasi2=='stoksp' ? 'active':'';?>">Gudang Spinning</a>
                         </li>
                         <li class="menu-item">
-                            <a href="" class="menu-link <?=$navigasi2=='pembelian4' ? 'active':'';?>">Gudang Weaving</a>
+                            <a href="<?=base_url('gudang/stok/weaving');?>" class="menu-link <?=$navigasi2=='stokwv' ? 'active':'';?>">Gudang Weaving</a>
                         </li>
-                        <li class="menu-item">
-                            <a href="<?=base_url('tarik/ke/spinning');?>" class="menu-link <?=$navigasi2=='tariksp' ? 'active':'';?>">Tarik Ke Spinning</a>
-                        </li>
-                        <li class="menu-item">
-                            <a href="<?=base_url('tarik/ke/weaving');?>" class="menu-link <?=$navigasi2=='tarikwv' ? 'active':'';?>">Tarik Ke Weaving</a>
-                        </li>
-                        <!-- <li class="menu-item">
-                            <a href="#" class="menu-link">Stok Masuk</a>
-                        </li>
-                        <li class="menu-item">
-                            <a href="#" class="menu-link">Stok Keluar</a>
-                        </li>
-                        <li class="menu-item">
-                            <a href="#" class="menu-link">Stok Minimum</a>
-                        </li> -->
+                        
                     </ul>
                 </li>
                 
                 <li class="menu-item">
                     <a href="#" class="menu-link">
                         <span class="material-icons menu-icon">receipt_long</span>
-                        <span>Transaksi</span>
+                        <span>Pemakaian</span>
                     </a>
                 </li>
                 <li class="menu-item">

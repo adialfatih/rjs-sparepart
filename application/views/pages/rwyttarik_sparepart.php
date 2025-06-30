@@ -1,49 +1,43 @@
-<!-- Main Content -->
-        <main class="main-content">
-            <div class="page-header">
-                <h1 class="page-title">Item Pembelian</h1>
-                <div class="breadcrumb">
-                    <a href="#">Sparepart</a>
-                    <span class="material-icons separator">chevron_right</span>
-                    <span>Lokasi</span>
-                    <span class="material-icons separator">chevron_right</span>
-                    <span>Kantor</span>
-                </div>
-            </div>
-            <?php
+<?php
             if($navigasi2=="tariksp"){
                 $tujuan_untuk = "Spinning";
             } else {
                 $tujuan_untuk = "Weaving";
             }
             ?>
+        <main class="main-content">
+            <div class="page-header">
+                <h1 class="page-title">Riwayat Penarikan</h1>
+                <div class="breadcrumb">
+                    <a href="#">Sparepart</a>
+                    <span class="material-icons separator">chevron_right</span>
+                    <span>Riwayat</span>
+                    <span class="material-icons separator">chevron_right</span>
+                    <span><?=$tujuan_untuk;?></span>
+                </div>
+            </div>
+            
             
             <!-- Recent Transactions Table -->
             <div class="table-container">
                 <div class="table-header">
                     <div>
-                        <h3 class="table-title">Data Pembelian Sparepart <?=$tujuan_untuk;?></h3>
-                        <small>Menampikan data pembelian sparepart untuk gudang <?=$tujuan_untuk;?> yang masih di kantor.</small>
+                        <h3 class="table-title">Riwayat Penarikan Sparepart</h3>
+                        <small>Menampikan data riwayat penarikan sparepart untuk gudang <?=$tujuan_untuk;?>.</small>
                     </div>
                     
-                    <div class="table-actions">
-                        <a href="<?=base_url('history/ke/'.strtolower($tujuan_untuk));?>">
-                        <button class="btn btn-outline btn-sm">
-                            <span class="material-icons">camera</span>
-                            <span>Riwayat</span>
-                        </button></a>
-                    </div>
                 </div>
                 
                 <table id="dataTable" class="display nowrap" style="width:100%">
                     <thead>
                         <tr>
                             <th>No</th>
-                            <th>Nama Item</th>
-                            <th>Qty</th>
-                            <th>Satuan</th>
-                            <th>Tanggal Datang</th>
-                            <th>Aksi</th>
+                            <th>Tanggal Tarik</th>
+                            <th>User</th>
+                            <th>Kategori</th>
+                            <th>Nama Sparepart</th>
+                            <th>Jumlah</th>
+                            <th>#</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
@@ -71,7 +65,7 @@
         <div class="modal modal-lg">
             <div class="modal-header">
                 <div>
-                    <h3 class="modal-title">Input Data Sparepart</h3>
+                    <h3 class="modal-title">Input Data Sparepart<?=$this->session->userdata('nama');?></h3>
                     <small>Masukan data sparepart baru ke gudang <?=$tujuan_untuk;?></small>
                 </div>
                 <button class="modal-close" id="closeAddModal">&times;</button>

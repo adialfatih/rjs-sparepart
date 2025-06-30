@@ -98,6 +98,7 @@
 					Swal.fire('Login Error!', 'Anda harus mengisi username dan password untuk login', 'error');
 				} else {
 					if(username!='' && password!=''){
+                        Swal.showLoading();
 						$.ajax({
 							url: '<?=base_url('login/actlogin');?>',
 							type: 'POST',

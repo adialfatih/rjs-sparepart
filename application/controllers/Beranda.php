@@ -42,7 +42,7 @@ class Beranda extends CI_Controller
             'sess_user'     => $this->session->userdata('username'),
             'sess_pass'     => $this->session->userdata('password'),
             'sess_akses'    => $akses,
-            'navigasi'      => 'gudang',
+            'navigasi'      => 'sparepart',
             'navigasi2'     => 'tariksp'
             //'qrdata'        => $qr
         );
@@ -61,7 +61,7 @@ class Beranda extends CI_Controller
             'sess_user'     => $this->session->userdata('username'),
             'sess_pass'     => $this->session->userdata('password'),
             'sess_akses'    => $akses,
-            'navigasi'      => 'gudang',
+            'navigasi'      => 'sparepart',
             'navigasi2'     => 'tarikwv'
            //'qrdata'        => $qr
         );
@@ -69,6 +69,44 @@ class Beranda extends CI_Controller
         $this->load->view('part/left_nav', $data);
         $this->load->view('pages/tarik_sparepart', $data); 
         $this->load->view('part/main_js2', $data);
+  } //end
+  function stokwv(){ 
+        $akses = $this->session->userdata('akses');
+        //$qr = $this->data_model->get_byid('v_onkantor', ['untuk'=>'Gudang Weaving']);
+        $data = array(
+            'title'         => 'Stok Sparepart Weaving',
+            'sess_id'       => $this->session->userdata('id'),
+            'sess_nama'     => $this->session->userdata('nama'),
+            'sess_user'     => $this->session->userdata('username'),
+            'sess_pass'     => $this->session->userdata('password'),
+            'sess_akses'    => $akses,
+            'navigasi'      => 'gudang',
+            'navigasi2'     => 'stokwv'
+           //'qrdata'        => $qr
+        );
+        $this->load->view('part/main_header', $data);
+        $this->load->view('part/left_nav', $data);
+        $this->load->view('pages/stok_sparepart', $data); 
+        $this->load->view('part/main_js3', $data);
+  } //end
+  function stoksp(){ 
+        $akses = $this->session->userdata('akses');
+        //$qr = $this->data_model->get_byid('v_onkantor', ['untuk'=>'Gudang Weaving']);
+        $data = array(
+            'title'         => 'Stok Sparepart Weaving',
+            'sess_id'       => $this->session->userdata('id'),
+            'sess_nama'     => $this->session->userdata('nama'),
+            'sess_user'     => $this->session->userdata('username'),
+            'sess_pass'     => $this->session->userdata('password'),
+            'sess_akses'    => $akses,
+            'navigasi'      => 'gudang',
+            'navigasi2'     => 'stoksp'
+           //'qrdata'        => $qr
+        );
+        $this->load->view('part/main_header', $data);
+        $this->load->view('part/left_nav', $data);
+        $this->load->view('pages/stok_sparepart', $data); 
+        $this->load->view('part/main_js3', $data);
   } //end
 
   function cobascan(){

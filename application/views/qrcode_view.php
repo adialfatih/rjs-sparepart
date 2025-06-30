@@ -57,6 +57,7 @@
                                 '<p><a href="'+response.image_url+'" download>Download QR Code</a></p>'
                             );
                         }
+                        $('#csrf_token_value').val(response.newCsrfHash);
                     },
                     error: function(xhr, status, error) {
                         $('#qrcodeResult').html('<p class="error">Terjadi kesalahan: '+error+'</p>');

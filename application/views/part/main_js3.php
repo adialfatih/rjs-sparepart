@@ -115,10 +115,10 @@
 
         window.addEventListener('resize', handleResize);
         function loadData(sp){
-            console.log('testing :'+sp);
+            console.log('tampilkan '+sp);
             $('#tableBody').html('<tr><td colspan="6">Loading Data</td></tr>');
             $.ajax({
-                url:"<?=base_url('data/showReadyKantor');?>",
+                url:"<?=base_url('data/showDataStok');?>",
                 type: "GET",
                 data: {"sp":sp},
                 cache: false,
@@ -132,24 +132,42 @@
             });
         }
         loadData('<?=$navigasi2;?>');
-        function tarikGudang(tujuan,id){
-            $('#idencode').val('0');
-            $('#qr_code_data').val('0');
-            $.ajax({
-                url:"<?=base_url('data/showItemSatuan');?>",
-                type: "GET",
-                dataType: 'json',
-                data: {"id":id},
-                cache: false,
-                success: function(response){
-                    $('#itemPembelianQuote').html(response.html);
-                    $('#idDetilPem').val(''+response.idpemb);
-                }
-            });
-            addSparepartModal.classList.toggle('show');
-        }
         
-        document.addEventListener('DOMContentLoaded', function() {
+    function addStokManual(){
+        addSparepartModal.classList.add('show');
+    }
+        
+            
+    const qrcodeResult22 = document.getElementById("qrcodeResult");
+    const qrcodeResult23 = document.getElementById("qrcode");
+    const reader = new Html5Qrcode("reader");
+
+    document.getElementById("startScan").addEventListener("click", function() {
+        document.getElementById("reader").style.display = "block";
+
+        reader.start(
+            { facingMode: "environment" },
+            {
+                fps: 10,
+                qrbox: 250
+            },
+            (decodedText, decodedResult) => {
+                // Success callback
+                qrcodeResult23.value = "" + decodedText;
+                reader.stop().then(() => {
+                    buatkanCode();
+                    document.getElementById("reader").style.display = "none";
+                });
+            },
+            (errorMessage) => {
+                // Error callback (opsional)
+                console.warn("Scan error", errorMessage);
+            }
+        ).catch((err) => {
+            console.error("Camera start failed", err);
+        });
+    });
+    document.addEventListener('DOMContentLoaded', function() {
             const kategoriSparepartInput = document.getElementById('kategoriSparepart');
             const combobox = document.getElementById('combobox');
             const optionsContainer = document.getElementById('options');
@@ -313,24 +331,7 @@
                     }
                 }
             });
-            // const cek1 = document.getElementById('duscek');
-            // const cek2 = document.getElementById('packcek');
-            // const cek3 = document.getElementById('pcscek');
-            // cek1.addEventListener('click', () => {
-            //     cek2.checked = false;
-            //     cek3.checked = false;
-            //     $('#idencode').val('dus');
-            // });
-            // cek2.addEventListener('click', () => {
-            //     cek1.checked = false;
-            //     cek3.checked = false;
-            //     $('#idencode').val('pack');
-            // });
-            // cek3.addEventListener('click', () => {
-            //     cek2.checked = false;
-            //     cek1.checked = false;
-            //     $('#idencode').val('pcs');
-            // });
+            
             function buatkanCode(){
                 var qrtext = $('#qrcode').val().trim();
                 
@@ -370,96 +371,9 @@
                 buatkanCode();
             });
             
-            $('#simpanTarikPembelian').click(function() {
-                var csrfName = $('#csrf_token_name').val();
-			    var csrfHash = $('#csrf_token_value').val();
-                console.log("Mengirim CSRF Name:", csrfName);
-                console.log("Mengirim CSRF Hash:", csrfHash);
-                var idDetilPem = $('#idDetilPem').val();
-                if(idDetilPem!="" && idDetilPem!=0){
-                    var kategoriSparepart = $('#kategoriSparepart').val();
-                    var namaSparepart = $('#combobox').val();
-                    //var idencode = $('#idencode').val();
-                    var locid = $('#locid').val();
-                    var qr_code_data = $('#qrcode').val();
-                    var qr_code_data2 = $('#qr_code_data').val();
-                    var tujuanGudang = $('#tujuanGudang').val();
-                    //var dusid = $('#dusid').val();
-                    //var packid = $('#packid').val();
-                    var pcsid = $('#pcsid').val();
-                    if(kategoriSparepart!="" &&  namaSparepart!="" && tujuanGudang!=""){
-                        if(qr_code_data2=="" || qr_code_data2=="null" || qr_code_data2=="0"){
-                            Swal.fire('Gagal Menyimpan!', 'Silahkan generate QR Code atau Scan Code', 'error');
-                        } else {
-                            $.ajax({
-                                url: '<?=base_url("data/simpan_tarikan"); ?>',
-                                type: 'POST',
-                                dataType: 'json',
-                                data: { 
-                                    idDetilPem: idDetilPem,
-                                    kategoriSparepart: kategoriSparepart,
-                                    namaSparepart: namaSparepart,
-                                    locid: locid,
-                                    qr_code_data: qr_code_data,
-                                    tujuanGudang: tujuanGudang,
-                                    pcsid: pcsid,
-                                    [csrfName]: csrfHash 
-                                },
-                                success: function(response) {
-                                    $('#csrf_token_value').val(response.newCsrfHash);
-                                    if(response.status == "success"){
-                                        Swal.fire('Berhasil Menyimpan!', response.message, 'success');
-                                    } else {
-                                        Swal.fire('Gagal Menyimpan!', response.message, 'error');
-                                    }
-                                    loadData('<?=$navigasi2;?>');
-                                },
-                                error: function(xhr, status, error) {
-                                    console.log(''+error);
-                                    console.log(''+xhr);
-                                    console.log(''+status);
-                                }
-                            });
-                        }
-                    } else {
-                        Swal.fire('Gagal Menyimpan!', 'Anda harus mengisi kategori dan nama sparepart.', 'error');
-                    }
-                } else {
-                    Swal.fire('Gagal Menyimpan!', 'Token Error.', 'error');
-                }
-            });
+            
             
         });
-    const qrcodeResult22 = document.getElementById("qrcodeResult");
-    const qrcodeResult23 = document.getElementById("qrcode");
-    const reader = new Html5Qrcode("reader");
-
-    document.getElementById("startScan").addEventListener("click", function() {
-        document.getElementById("reader").style.display = "block";
-
-        reader.start(
-            { facingMode: "environment" },
-            {
-                fps: 10,
-                qrbox: 250
-            },
-            (decodedText, decodedResult) => {
-                // Success callback
-                qrcodeResult23.value = "" + decodedText;
-                reader.stop().then(() => {
-                    buatkanCode();
-                    document.getElementById("reader").style.display = "none";
-                });
-            },
-            (errorMessage) => {
-                // Error callback (opsional)
-                console.warn("Scan error", errorMessage);
-            }
-        ).catch((err) => {
-            console.error("Camera start failed", err);
-        });
-    });
-    
     
     </script>
 </body>

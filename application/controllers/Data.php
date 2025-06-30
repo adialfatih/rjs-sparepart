@@ -29,6 +29,11 @@ class Data extends CI_Controller
         //$keteranganss = $this->input->post('keteranganss', TRUE);
         $codebeli = $this->input->post('codebeli', TRUE);
         $fromdata = $this->input->post('fromdata', TRUE);
+        $noppn = $this->input->post('noppn', TRUE);
+        $nopph = $this->input->post('nopph', TRUE);
+        $nilaippn = $this->data_model->parseInputForm($noppn);
+        $nilaipph = $this->data_model->parseInputForm($nopph);
+        $dibayarOleh = $this->input->post('dibayarOleh', TRUE);
         if($codebeli == "0" || $codebeli == 0){
             $codebeli2 = $this->data_model->acakKode(23);
         }
@@ -42,10 +47,13 @@ class Data extends CI_Controller
                             'tgl_nota' => $tglNota,
                             'no_nota_sj' => strtoupper($nomorNota),
                             'supp' => strtolower($supp),
-                            'untuk' => $divisiId,
+                            'untuk' => 'kantor',
                             'tgl_input' => date('Y-m-d H:i:s'),
                             'yginput' => $this->session->userdata('username'),
-                            'kode_beli' => $codebeli2
+                            'kode_beli' => $codebeli2,
+                            'ppn' => $nilaippn,
+                            'pph' => $nilaipph,
+                            'pph_tanggung' => $dibayarOleh=='pembeli' ? 'pembeli':'penjual'
                         ]);
                         $x = explode('-', $jmlPcs);
                         if(count($x) == 2){
@@ -63,7 +71,8 @@ class Data extends CI_Controller
                             'satuan' => $xSatuan,
                             'harga_qty' => $hrgPcs,
                             'total_harga' => $total_harga,
-                            'lokasi' => 'Kantor'
+                            'lokasi' => 'Kantor',
+                            'untuk_divisi' => $divisiId
                         ]);
                         $response = [
                             'status' => 'success',
@@ -86,7 +95,10 @@ class Data extends CI_Controller
                         'tgl_nota' => $tglNota,
                         'no_nota_sj' => strtoupper($nomorNota),
                         'supp' => strtolower($supp),
-                        'untuk' => $divisiId,
+                        'untuk' => 'kantor',
+                        'ppn' => $nilaippn,
+                        'pph' => $nilaipph,
+                        'pph_tanggung' => $dibayarOleh=='pembeli' ? 'pembeli':'penjual'
                     ]);
                     $response = [
                         'status' => 'success',
@@ -105,10 +117,13 @@ class Data extends CI_Controller
                             'tgl_nota' => $tglNota,
                             'no_nota_sj' => strtoupper($nomorNota),
                             'supp' => strtolower($supp),
-                            'untuk' => $divisiId,
+                            'untuk' => 'kantor',
                             'tgl_input' => date('Y-m-d H:i:s'),
                             'yginput' => $this->session->userdata('username'),
-                            'kode_beli' => $codebeli2
+                            'kode_beli' => $codebeli2,
+                            'ppn' => $nilaippn,
+                            'pph' => $nilaipph,
+                            'pph_tanggung' => $dibayarOleh=='pembeli' ? 'pembeli':'penjual'
                         ]);
                         $x = explode('-', $jmlPcs);
                         if(count($x) == 2){
@@ -126,7 +141,8 @@ class Data extends CI_Controller
                             'satuan' => $xSatuan,
                             'harga_qty' => $hrgPcs,
                             'total_harga' => $total_harga,
-                            'lokasi' => 'Kantor'
+                            'lokasi' => 'Kantor',
+                            'untuk_divisi' => $divisiId
                         ]);
                         $response = [
                             'status' => 'success',
@@ -159,7 +175,8 @@ class Data extends CI_Controller
                         'satuan' => $xSatuan,
                         'harga_qty' => $hrgPcs,
                         'total_harga' => $total_harga,
-                        'lokasi' => 'Kantor'
+                        'lokasi' => 'Kantor',
+                        'untuk_divisi' => $divisiId
                     ]);
                     $response = [
                         'status' => 'success',
@@ -184,13 +201,22 @@ class Data extends CI_Controller
         $kd = $this->input->get('kd', TRUE);
         $html = '';
         $cek = $this->data_model->get_byid('detil_pembelian',['kode_beli'=>$kd]);
-        $dto = $this->db->query("SELECT tgl_input,yginput,kode_beli FROM pembelian WHERE kode_beli=?",[$kd])->row_array();
+        $dto = $this->db->query("SELECT tgl_input,yginput,kode_beli,ppn,pph,pph_tanggung FROM pembelian WHERE kode_beli=?",[$kd])->row_array();
         $yginput = ucwords($dto['yginput']);
+        $nilai_ppn = $dto['ppn'];
+        $nilai_pph = $dto['pph'];
+        $pph_tgng = $dto['pph_tanggung'];
+        if($pph_tgng == "pembeli"){
+            $plsmns = "+";
+        } else {
+            $plsmns = "-";
+        }
         $tglinput = date('d M Y H:i', strtotime($dto['tgl_input']));
         if($cek->num_rows() > 0){
             $html .= '<table><thead>
                         <tr>
                             <th>No</th>
+                            <th>GD</th>
                             <th>Nama Sparepart</th>
                             <th>Jumlah</th>
                             <th>Harga</th>
@@ -202,6 +228,11 @@ class Data extends CI_Controller
             $allHarga=0;
             foreach($cek->result() as $val){
                 $nama_sparepart = ucwords($val->nama_sparepart);
+                if($val->untuk_divisi=="Gudang Spinning"){ $gdv="Spinning"; } else {
+                    if($val->untuk_divisi=="Gudang Weaving") { $gdv="Weaving"; } else {
+                        $gdv = $val->untuk_divisi;
+                    }
+                }
                 $qty_sparepart = number_format($val->qty);
                 $sat_sparepart = $val->satuan;
                 $hrg_sparepart = number_format($val->harga_qty);
@@ -210,6 +241,7 @@ class Data extends CI_Controller
                 $allHarga+=$val->total_harga;
                 $html .= '<tr>
                             <td>'.$no.'</td>
+                            <td>'.$gdv.'</td>
                             <td>'.$nama_sparepart.'</td>
                             <td>'.$qty_sparepart.' '.$sat_sparepart.'</td>
                             <td>Rp. '.$hrg_sparepart.'</td>
@@ -219,10 +251,44 @@ class Data extends CI_Controller
                 ';
                 $no++;
             }
-            $html .= '<tr><td></td><td></td><td></td><td></td><td><strong>Rp. '.number_format($allHarga).'</strong></td><td></td></tr></tbody>
+            $nominal_pph1 = ($nilai_pph * $allHarga) / 100;
+            $nominal_pph = round($nominal_pph1);
+            $harga_plus_ppn = $allHarga + $nilai_ppn;
+            if($pph_tgng == "pembeli"){
+                $harga_sudah_pph = $harga_plus_ppn + $nominal_pph;
+            } else {
+                $harga_sudah_pph = $harga_plus_ppn - $nominal_pph;
+            }
+            $html .= '<tr><td colspan="5"><strong>Total Harga Barang</strong></td><td><strong>Rp. '.number_format($allHarga).'</strong></td><td></td></tr>';
+            if($nilai_ppn > 0){
+            $html .= '
+            <tr>
+                <td colspan="4">Nilai PPN</td>
+                <td></td>
+                <td>Rp. '.number_format($nilai_ppn).'</td>
+                <td></td>
+            </tr>';
+            }
+            if($nilai_pph > 0){
+            $html .='
+            <tr>
+                <td colspan="4">Presentase PPH</td>
+                <td></td>
+                <td>'.$plsmns.' '.number_format($nilai_pph).'% (Rp. '.number_format($nominal_pph).')</td>
+                <td></td>
+            </tr>'; }
+            if($nilai_pph > 0 || $nilai_ppn > 0){ 
+            $html .='
+            <tr>
+                <td colspan="4"><strong>Tagihan Akhir</strong></td>
+                <td></td>
+                <td><strong>Rp. '.number_format($harga_sudah_pph).'</strong></td>
+                <td></td>
+            </tr>'; } $html .='
+            </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="6" style="font-size:12px;">Diinput oleh : <strong>'.$yginput.'</strong>, tanggal : <strong>'.$tglinput.'</strong></td>
+                    <td colspan="7" style="font-size:12px;">Diinput oleh : <strong>'.$yginput.'</strong>, tanggal : <strong>'.$tglinput.'</strong>,&nbsp;&nbsp; <a href="javascript:void(0);" style="color:red;" onclick="hapusPembelian(\''.$kd.'\')">Hapus pembelian</a></td>
                 </tr>
             </tfoot>
             </table>';
@@ -259,15 +325,17 @@ class Data extends CI_Controller
                         $sty = $val->untuk;
                     }
                 }
+                //$ttl2 = $ttl + $val->ppn;
                 ?>
                 <tr>
                     <td data-order="<?=$val->tgl_datang;?>"><?=date('d M Y', strtotime($val->tgl_datang));?></td>
                     <td data-order="<?=$val->tgl_nota;?>"><?=date('d M Y', strtotime($val->tgl_nota));?></td>
                     <td data-order="<?=$val->tgl_input;?>"><?=date('d M Y', strtotime($val->tgl_input));?></td>
                     <td><?=$val->no_nota_sj;?></td>
+                    <td>Rp. <?=number_format($val->ppn);?></td>
+                    <td><?=$val->pph;?> %</td>
                     <td>Rp. <?=number_format($ttl);?></td>
                     <td><?=strtoupper($val->supp);?></td>
-                    <td><?=$sty;?></td>
                     <td>
                         <button class="btn btn-success btn-sm" onclick="showModalPembelian('<?=$kode;?>')">
                             <span class="material-icons">file_open</span>
@@ -292,6 +360,9 @@ class Data extends CI_Controller
             $tgl_input  = $dt['tgl_input'];
             $kode_beli  = $dt['kode_beli'];
             $yginput    = $dt['yginput'];
+            $ppn        = $dt['ppn'];
+            $pph        = $dt['pph'].'%';
+            $pph_tanggung= $dt['pph_tanggung'];
             $response   = [
                 'status' => 'success',
                 'message' => 'Kode ditemukan',
@@ -302,7 +373,10 @@ class Data extends CI_Controller
                 'untuk' => $untuk,
                 'tgl_input' => $tgl_input,
                 'kode_beli' => $kode_beli,
-                'yginput' => $yginput
+                'yginput' => $yginput,
+                'ppn' => number_format($ppn,0,',','.'),
+                'pph' => $pph,
+                'pph_tanggung' => $pph_tanggung
             ];
         } else {
             $response = [
@@ -316,23 +390,56 @@ class Data extends CI_Controller
     function showReadyKantor(){
         $kd = $this->input->get('sp', TRUE);
         if($kd == "tarikwv"){
-            $qry = $this->data_model->get_byid('v_onkantor', ['untuk'=>'Gudang Weaving']);
-        } else {
-            $qry = $this->data_model->get_byid('v_onkantor', ['untuk'=>'Gudang Spinning']);
+            $qry = $this->data_model->get_byid('v_onkantor2', ['untuk_divisi'=>'Gudang Weaving']);
+            $tipedata = 1;
         }
-        if($qry->num_rows() > 0){
-            foreach($qry->result() as $key => $val){
-                $no = $key + 1;
-                ?>
-                <tr>
-                    <td><?=$no;?></td>
-                    <td><?=strtoupper($val->nama_sparepart);?></td>
-                    <td><?=number_format($val->qty);?></td>
-                    <td><?=$val->satuan;?></td>
-                    <td data-order="<?=$val->tgl_datang;?>"><?=date('d M Y',strtotime($val->tgl_datang));?></td>
-                    <td><button type="button" class="btn btn-primary" onclick="tarikGudang('<?=$kd;?>','<?=$val->id_detilpem;?>')">Tarik</button></td>
-                </tr>
-                <?php 
+        if($kd == "tariksp"){
+            $qry = $this->data_model->get_byid('v_onkantor2', ['untuk_divisi'=>'Gudang Spinning']);
+            $tipedata = 1;
+        } 
+        if($kd == "rtarikwv"){
+            $qry = $this->data_model->get_byid('riwayat_tarik', ['tujuan'=>'Weaving']);
+            $tipedata = 2;
+        } 
+        if($kd == "rtariksp"){
+            $qry = $this->data_model->get_byid('riwayat_tarik', ['tujuan'=>'Spinning']);
+            $tipedata = 2;
+        }
+        if($tipedata==1){
+            if($qry->num_rows() > 0){
+                foreach($qry->result() as $key => $val){
+                    $no = $key + 1;
+                    ?>
+                    <tr>
+                        <td><?=$no;?></td>
+                        <td><?=strtoupper($val->nama_sparepart);?></td>
+                        <td><?=number_format($val->qty);?></td>
+                        <td><?=$val->satuan;?></td>
+                        <td data-order="<?=$val->tgl_datang;?>"><?=date('d M Y',strtotime($val->tgl_datang));?></td>
+                        <td><button type="button" class="btn btn-primary" onclick="tarikGudang('<?=$kd;?>','<?=$val->id_detilpem;?>')">Tarik</button></td>
+                    </tr>
+                    <?php 
+                }
+            }
+        } else {
+            if($qry->num_rows() > 0){
+                foreach($qry->result() as $key => $val){
+                    $no = $key + 1;
+                    $kdsp = $val->kodesp;
+                    $id = $val->rwtyk;
+                    $rrow = $this->data_model->get_byid('table_sparepart', ['kodesp'=>$kdsp])->row_array();
+                    ?>
+                    <tr>
+                        <td><?=$no;?></td>
+                        <td data-order="<?=$val->tanggal_tarik;?>"><?=date('d M Y',strtotime($val->tanggal_tarik));?></td>
+                        <td><?=$val->yg_narik;?></td>
+                        <td><?=$rrow['kategori_sp'];?></td>
+                        <td><?=$rrow['nama_sparepart'];?></td>
+                        <td data-order="<?=$val->satuan_pcs;?>"><?=$val->satuan_pcs;?> <?=$rrow['satuan_pemakaian'];?></td>
+                        <td><button type="button" class="btn btn-primary" onclick="viewDetil('<?=$id;?>')">View</button></td>
+                    </tr>
+                    <?php 
+                }
             }
         }
     } //end
@@ -346,9 +453,20 @@ class Data extends CI_Controller
         ];
         echo json_encode($response);
     }
+    function hapusPembelian(){
+        $kd = $this->input->get('id', TRUE);
+        //$code_beli = $this->data_model->get_byid('detil_pembelian',['id_detilpem'=>$kd])->row("kode_beli");
+        $this->db->query("DELETE FROM detil_pembelian WHERE kode_beli=?", [$kd]);
+        $this->db->query("DELETE FROM pembelian WHERE kode_beli=?", [$kd]);
+        $response = [
+            'status' => 'success',
+            'message' => "Kode : 211"
+        ];
+        echo json_encode($response);
+    }
     function showItemSatuan(){
         $id = $this->input->get('id', TRUE);
-        $cek = $this->data_model->get_byid('v_onkantor',['id_detilpem'=>$id]);
+        $cek = $this->data_model->get_byid('v_onkantor2',['id_detilpem'=>$id]);
         if($cek->num_rows() == 1){
             $namaItem = strtoupper($cek->row("nama_sparepart"));
             $qty = $cek->row("qty");
@@ -371,5 +489,146 @@ class Data extends CI_Controller
         
         echo json_encode($response);
     } //end
+    function simpan_tarikan(){
+        $idDetilPem         = $this->input->post('idDetilPem', TRUE);
+        $detil              = $this->db->query("SELECT id_detilpem,qty,harga_qty FROM detil_pembelian WHERE id_detilpem='$idDetilPem'");
+        $jmlAsli            = $detil->row("qty");
+        $harga_qty          = $detil->row("harga_qty");
+        $kategoriSparepart  = $this->input->post('kategoriSparepart', TRUE);
+        $namaSparepart      = $this->input->post('namaSparepart', TRUE);
+        $locid              = $this->input->post('locid', TRUE);
+        $qr_code_data       = $this->input->post('qr_code_data', TRUE);
+        $tujuanGudang       = $this->input->post('tujuanGudang', TRUE);
+        $pcsid              = $this->input->post('pcsid', TRUE);
+        $kode_input         = $this->data_model->acakKode(13);
+        $jmlSudahTarik      = $this->db->query("SELECT SUM(satuan_pcs) AS jml FROM riwayat_tarik WHERE id_detilpem='$idDetilPem'")->row("jml");
+        $jmlBisaTarik       = $jmlAsli - $jmlSudahTarik;
+        //$struktur_barang = $this->convertUnits($dusid, $packid, $pcsid);
+        if($idDetilPem!="" && $kategoriSparepart!="" && $namaSparepart!="" && $locid!="" && $qr_code_data!="" && $tujuanGudang!="" && $pcsid!=""){
+            $ex = explode('-', $pcsid);
+            if(count($ex) == 2){
+                $_jumlah = intval($ex[0]);
+                $_satuan = ucfirst($ex[1]);
+            } else {
+                $_jumlah = intval($pcsid);
+                $_satuan = "Pcs";
+            }
+            if($_jumlah > 0 AND $_jumlah<=$jmlBisaTarik){
+                $_kat = strtolower($kategoriSparepart);
+                $_SP = strtolower($namaSparepart);
+                $cek = $this->data_model->get_byid('table_sparepart',['kategori_sp'=>$_kat, 'nama_sparepart'=>$_SP]);
+                if($cek->num_rows() == 1){
+                    $kode_SP = $cek->row("kodesp");
+                } else {
+                    $kode_SP = $this->data_model->acakKode(9);
+                    $this->data_model->saved('table_sparepart', [
+                        'kategori_sp' => strtoupper($_kat),
+                        'nama_sparepart' => strtoupper($_SP),
+                        'kodesp' => $kode_SP,
+                        'satuan_pemakaian' => $_satuan
+                    ]);
+                }
+                for ($i=0; $i <$_jumlah ; $i++) { 
+                    $this->data_model->saved('stok_sparepart', [
+                        'kodesp' => $kode_SP,
+                        'qrcode' => $qr_code_data,
+                        'codeinput' => $kode_input,
+                        'lokasi' => $tujuanGudang,
+                        'penempatan' => $locid,
+                        'harga_satuan' => $harga_qty
+                    ]);
+                }
+                $this->data_model->saved('riwayat_tarik', [
+                    'id_detilpem' => $idDetilPem,
+                    'tujuan' => $tujuanGudang,
+                    'kodesp' => $kode_SP,
+                    'tanggal_tarik' => date('Y-m-d'),
+                    'tanggal_input' => date('Y-m-d H:i:s'),
+                    'satuan_pcs' => $_jumlah,
+                    'penempatan' => $locid,
+                    'kode_qr' => $qr_code_data,
+                    'yg_narik' => $this->session->userdata('nama'),
+                    'codeinput' => $kode_input,
+                ]);
+                $response = [
+                    'status' => 'success',
+                    'message' => 'Menarik data sparepart ke '.$tujuanGudang.'',
+                    'newCsrfHash' => $this->security->get_csrf_hash()
+                ];
+                $jmlSudahTarik2 = $this->db->query("SELECT SUM(satuan_pcs) AS jml FROM riwayat_tarik WHERE id_detilpem='$idDetilPem'")->row("jml");
+                if($jmlSudahTarik2>=$jmlAsli){
+                    $this->data_model->updatedata('id_detilpem',$idDetilPem,'detil_pembelian',['lokasi'=>$tujuanGudang]);
+                }
+            } else {
+                $msg = "Minimal tarik 1 dan maksimal tarik".$jmlBisaTarik."";
+                $response = [
+                    'status' => 'error',
+                    'message' => $msg,
+                    'newCsrfHash' => $this->security->get_csrf_hash()
+                ];
+            }
+        } else {
+            $response = [
+                'status' => 'error',
+                'message' => 'Ada data yang masih kosong.!',
+                'newCsrfHash' => $this->security->get_csrf_hash()
+            ];
+        }
+        echo json_encode($response); 
+    }
+    function convertUnits($dus, $pack, $pcs) {
+        // Validasi input
+        if ($pcs <= 0) { return "0-0-0"; } 
+        else {
+        // Minimal harus ada pcs
+        // Hitung pcs per pack (harus bulat)
+        $pcsPerPack = 0;
+        if ($pack > 0) {
+            $pcsPerPack = floor($pcs / $pack);
+            if ($pcsPerPack === 0) { $pcsPerPack = 1; } // Minimal 1 pcs per pack
+        } else {
+            // Jika tidak ada pack, langsung return pcs saja
+            return "0-0-".$pcs;
+        }
+        
+        // Hitung pack per dus (harus bulat)
+        $packPerDus = 0;
+        if ($dus > 0) {
+            $packPerDus = floor($pack / $dus);
+            if ($packPerDus === 0) { $packPerDus = 1; } // Minimal 1 pack per dus
+        } else {
+            // Jika tidak ada dus, return perbandingan pack-pcs saja
+            return "0-1-".$packPerDus;
+        }
+        
+        // Return format dus-pack-pcs
+        return "1-".$packPerDus."-".$pcsPerPack.""; }
+    }
+
+    function showDataStok(){
+        $show = $this->input->get('sp', TRUE);
+        if($show=="stoksp"){
+            $record = $this->db->query("SELECT * FROM `table_sparepart` WHERE kodesp IN (SELECT kodesp FROM stok_sparepart WHERE lokasi='Spinning')");
+        } else {
+            $record = $this->db->query("SELECT * FROM `table_sparepart` WHERE kodesp IN (SELECT kodesp FROM stok_sparepart WHERE lokasi='Weaving')");
+        }
+        if($record->num_rows() > 0){
+            $no=1;
+            foreach ($record->result() as $key => $value) {
+                $kdsp = $value->kodesp;
+                $jml_stok = $this->db->query("SELECT COUNT(idstok) AS jml FROM stok_sparepart WHERE kodesp='$kdsp'")->row("jml");
+                echo "<tr>";
+                echo "<td>".$no."</td>";
+                echo "<td>".$value->kategori_sp."</td>";
+                echo "<td>".$value->nama_sparepart."</td>";
+                echo "<td>".number_format($jml_stok)."</td>";
+                echo "<td>".$value->satuan_pemakaian."</td>";
+                echo "<td><a href='javascript:void(0);' style='text-decoration:none;' class='btn btn-primary'>Cetak Barcode</a></td>";
+                echo "</tr>";
+                $no++;
+                
+            }
+        }
+    }
 }
 ?>

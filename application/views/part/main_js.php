@@ -81,6 +81,9 @@
                         document.getElementById('supp').value = ''+response.supp;
                         document.getElementById('divisiId').value = ''+response.untuk;
                         document.getElementById('codebeli').value = ''+response.kode_beli;
+                        document.getElementById('noppn').value = ''+response.ppn;
+                        document.getElementById('nopph').value = ''+response.pph;
+                        document.getElementById('dibayarOleh').value = ''+response.pph_tanggung;
                         loadItemDetil(response.kode_beli);
                         addSparepartModal.classList.add('show');
 					} else {
@@ -287,12 +290,19 @@
             
         });
 
-         function formatRibuan(el) {
-            // Hapus karakter non-angka
-            let angka = el.value.replace(/[^0-9]/g, '');
-            // Format ribuan
-            el.value = angka.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        function formatRibuan(el) { 
+            let nilai = el.value.replace(/[^0-9,]/g, '');
+            let [bilangan, desimal] = nilai.split(',');
+            bilangan = bilangan.replace(/^0+(?=\d)/, '');
+            bilangan = bilangan.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            if (desimal !== undefined) {
+                desimal = desimal.substring(0, 3);
+                el.value = `${bilangan},${desimal}`;
+            } else {
+                el.value = bilangan;
+            }
         }
+
         $("#addItem").click(function(){
             simpanPembelian('additem');
         });
@@ -310,6 +320,9 @@
             var namaSpare = document.getElementById('combobox').value;
             var jmlPcs = document.getElementById('jmlPcs').value;
             var hrgPcs = document.getElementById('hrgPcs').value;
+            var noppn = document.getElementById('noppn').value;
+            var nopph = document.getElementById('nopph').value;
+            var dibayarOleh = document.getElementById('dibayarOleh').value;
             // var keteranganss = document.getElementById('keteranganss').value;
             var codebeli = document.getElementById('codebeli').value;
             console.log(fromdata+' - '+namaSpare+' - '+jmlPcs+' - '+hrgPcs);
@@ -329,6 +342,9 @@
 						'hrgPcs': hrgPcs,
 						'codebeli': codebeli,
 						'fromdata': fromdata,
+						'noppn': noppn,
+						'nopph': nopph,
+						'dibayarOleh': dibayarOleh,
     					[csrfName]: csrfHash
 					},
 					success: function(response) {
@@ -373,6 +389,41 @@
                     console.log('owek 22');
 				}
 			});
+        }
+        function hapusPembelian(id){
+            Swal.fire({
+                title: "Hapus Pembelian?",
+                text: "Akan menghapus semua data pembelian dan item",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Hapus"
+                }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '<?=base_url('data/hapusPembelian');?>',
+                        type: 'GET',
+                        dataType: 'json',
+                        data: {'id': id},
+                        success: function(response) {
+                            console.log(response);
+                            if(response.status == 'success') {
+                                Swal.fire({
+                                title: "Berhasil hapus!",
+                                text: "Refresh halaman atau pencet F5 pada keyboard",
+                                icon: "success"
+                                });
+                            } else {
+                                Swal.fire('Gagal Mengambil Data!', response.message, 'error');
+                            }
+                        },
+                        error: function() {
+                            console.log('owek 52');
+                        }
+                    });
+                }
+            });
         }
         function hapusSparepart(id){
             const arrayData = id.split('_');

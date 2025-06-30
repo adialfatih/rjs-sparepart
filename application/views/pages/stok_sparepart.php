@@ -1,37 +1,28 @@
 <!-- Main Content -->
         <main class="main-content">
             <div class="page-header">
-                <h1 class="page-title">Item Pembelian</h1>
+                <h1 class="page-title">Stok Gudang Sparepart</h1>
                 <div class="breadcrumb">
                     <a href="#">Sparepart</a>
                     <span class="material-icons separator">chevron_right</span>
-                    <span>Lokasi</span>
+                    <span>Stok</span>
                     <span class="material-icons separator">chevron_right</span>
-                    <span>Kantor</span>
+                    <span><?=$navigasi2=='stoksp' ? 'Gudang Spinning':'Gudang Weaving';?></span>
                 </div>
             </div>
-            <?php
-            if($navigasi2=="tariksp"){
-                $tujuan_untuk = "Spinning";
-            } else {
-                $tujuan_untuk = "Weaving";
-            }
-            ?>
             
             <!-- Recent Transactions Table -->
             <div class="table-container">
                 <div class="table-header">
                     <div>
-                        <h3 class="table-title">Data Pembelian Sparepart <?=$tujuan_untuk;?></h3>
-                        <small>Menampikan data pembelian sparepart untuk gudang <?=$tujuan_untuk;?> yang masih di kantor.</small>
+                        <h3 class="table-title">Data Stok Sparepart <?=$navigasi2=='stoksp' ? 'Gudang Spinning':'Gudang Weaving';?></h3>
+                        <small>Menampikan data stok sparepart tersedia di <?=$navigasi2=='stoksp' ? 'Gudang Spinning':'Gudang Weaving';?></small>
                     </div>
-                    
                     <div class="table-actions">
-                        <a href="<?=base_url('history/ke/'.strtolower($tujuan_untuk));?>">
-                        <button class="btn btn-outline btn-sm">
-                            <span class="material-icons">camera</span>
-                            <span>Riwayat</span>
-                        </button></a>
+                        <button class="btn btn-outline btn-sm" onclick="addStokManual()">
+                            <span class="material-icons">add_circle</span>
+                            <span>Tambah Stok</span>
+                        </button>
                     </div>
                 </div>
                 
@@ -39,10 +30,10 @@
                     <thead>
                         <tr>
                             <th>No</th>
+                            <th>Kategori</th>
                             <th>Nama Item</th>
                             <th>Qty</th>
                             <th>Satuan</th>
-                            <th>Tanggal Datang</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -72,16 +63,12 @@
             <div class="modal-header">
                 <div>
                     <h3 class="modal-title">Input Data Sparepart</h3>
-                    <small>Masukan data sparepart baru ke gudang <?=$tujuan_untuk;?></small>
                 </div>
                 <button class="modal-close" id="closeAddModal">&times;</button>
             </div>
             <div class="modal-body">
-                <div style="width:100%;background:#ccc;display:flex;flex-direction:column;gap:5px;padding:15px;border-radius:4px;margin-bottom:15px;">
-                    <strong>Item Pembelian : </strong>
-                    <p id="itemPembelianQuote"></p>
-                    <input type="hidden" id="idDetilPem" value="0">
-                    <input type="hidden" id="tujuanGudang" value="<?=$tujuan_untuk;?>">
+                <div style="width:100%;background:#ccc;display:flex;padding:15px;border-radius:4px;margin-bottom:15px;">
+                    <span><strong><?=$navigasi2=='stoksp' ? 'Gudang Spinning':'Gudang Weaving';?><strong></span>
                 </div>
                 <form>
                     <div class="form-row">
@@ -115,9 +102,15 @@
                         </div>
                     </div>
                     <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Harga Satuan</label>
+                            <input type="text" class="form-control" placeholder="Masukan Harga per Pcs" id="hrgpcs">
+                        </div>
+                    </div>
+                    <div class="form-row">
                         
                         <div class="form-group">
-                            <label class="form-label">Satuan Pcs (Satuan pemakaian)</label>
+                            <label class="form-label">Jumlah Stok Pcs</label>
                             <input type="text" class="form-control" style="border:1px solid red;" placeholder="Masukan berapa Pcs" id="pcsid">
                         </div>
                         <div class="form-group">
@@ -126,6 +119,7 @@
                             <span style="color:#3b3a39;font-size:13px;">Contoh : RAK-A1 / RAK-A2</span>
                         </div>
                     </div>
+                    
                     <input type="hidden" name="identifikasi" id="idencode" value="0">
                     
                     <div class="form-row">
@@ -157,7 +151,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-outline" id="cancelAddModal">Batal</button>
-                <button class="btn btn-primary" id="simpanTarikPembelian">Simpan</button>
+                <button class="btn btn-primary" onclick="simpanManual()">Simpan</button>
             </div>
         </div>
     </div>

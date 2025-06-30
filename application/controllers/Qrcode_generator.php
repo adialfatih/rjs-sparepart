@@ -44,6 +44,7 @@ class Qrcode_generator extends CI_Controller {
         // Return path relatif untuk ditampilkan
         echo json_encode([
             'success' => true,
+            'newCsrfHash' => $this->security->get_csrf_hash(),
             'image_url' => base_url('public/qrcode/'.$filename)
         ]);
     }
