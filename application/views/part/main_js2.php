@@ -408,7 +408,9 @@
                                 success: function(response) {
                                     $('#csrf_token_value').val(response.newCsrfHash);
                                     if(response.status == "success"){
-                                        Swal.fire('Berhasil Menyimpan!', response.message, 'success');
+                                        Swal.fire('Berhasil Menyimpan!', response.message, 'success').then((result) => {
+                                            addSparepartModal.classList.remove('show');
+                                        });
                                     } else {
                                         Swal.fire('Gagal Menyimpan!', response.message, 'error');
                                     }

@@ -374,7 +374,45 @@
             
             
         });
-    
+        function simpanManual(){
+            var tujuanGudang = document.getElementById('tujuanGudang').value;
+            var kat = document.getElementById('kategoriSparepart').value;
+            var nmsp = document.getElementById('combobox').value;
+            var hrg = document.getElementById('hrgpcs').value;
+            var pcs = document.getElementById('pcsid').value;
+            var loc = document.getElementById('locid').value;
+            var qrcode = document.getElementById('qrcode').value;
+            var qrcode2 = document.getElementById('qr_code_data').value;
+            if(tujuanGudang == ''){
+                Swal.fire('Gagal Menyimpan!', 'Tujuan penambahan stok tidak ada.!', 'error');
+            } else {
+                if(kat!="" && nmsp!="" && hrg!="" && parseInt(pcs) > 0 && loc!=""){
+                    if(qrcode==""){
+                        Swal.fire('Gagal Menyimpan!', 'Anda harus mengisi QR Code.!', 'error');
+                    } else {
+                        if(qrcode2=="" || qrcode2=="null" || qrcode2=="0"){
+                            Swal.fire('Info', 'Silahkan klik generate QR Code', 'info');
+                        } else {
+
+                        }
+                    }
+                } else {
+                    Swal.fire('Gagal Menyimpan!', 'Anda harus mengisi data sparepart dengan benar.!', 'error');
+                }
+            }
+        }
+        function formatRibuan(el) { 
+            let nilai = el.value.replace(/[^0-9,]/g, '');
+            let [bilangan, desimal] = nilai.split(',');
+            bilangan = bilangan.replace(/^0+(?=\d)/, '');
+            bilangan = bilangan.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            if (desimal !== undefined) {
+                desimal = desimal.substring(0, 3);
+                el.value = `${bilangan},${desimal}`;
+            } else {
+                el.value = bilangan;
+            }
+        }
     </script>
 </body>
 </html>

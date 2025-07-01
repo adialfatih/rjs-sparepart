@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-$config['base_url'] = 'http://192.168.10.70/sparepart/';
+$config['base_url'] = 'http://localhost:8080/rjs-sparepart/';
 
 $config['index_page'] = '';
 

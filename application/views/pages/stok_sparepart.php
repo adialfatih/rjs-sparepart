@@ -71,6 +71,7 @@
                     <span><strong><?=$navigasi2=='stoksp' ? 'Gudang Spinning':'Gudang Weaving';?><strong></span>
                 </div>
                 <form>
+                    <input type="hidden" id="tujuanGudang" value="<?=$navigasi2;?>">
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label">Kategori Barang</label>
@@ -104,7 +105,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label">Harga Satuan</label>
-                            <input type="text" class="form-control" placeholder="Masukan Harga per Pcs" id="hrgpcs">
+                            <input type="text" class="form-control" placeholder="Masukan Harga per Pcs" id="hrgpcs" onkeyup="formatRibuan(this)">
                         </div>
                     </div>
                     <div class="form-row">
