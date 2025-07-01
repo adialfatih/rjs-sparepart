@@ -11,6 +11,58 @@ class Nota extends CI_Controller {
             //redirect(base_url('login'));
         }
     }
+    public function qrcode(){
+        //$this->load->library('mypdf');
+        $kode = $this->uri->segment(3);
+        $gambar = "qr_".$kode.".png";
+        //$pdf = new FPDF('L','mm',array(40,30)); // Panjang bisa dinamis
+        $pdf = new FPDF('L','mm', array(40,30));
+        $pdf->AddPage();
+        $pdf->SetMargins(0,0,0);
+        $pdf->SetAutoPageBreak(false);
+        $pdf->SetFont('Arial', 'B', 12);
+        $qr_width = 20; // mm
+        $x_qr = (40 - $qr_width) / 2;
+        $y_qr = 3;
+        $thisUrl = "".base_url()."";
+        $pdf->Image(''.$thisUrl.'public/qrcode/'.$gambar.'', $x_qr, $y_qr, $qr_width, $qr_width, 'PNG');
+
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->SetXY(0, $qr_width + 3 ); // atur posisi XY manual, tepat di bawah QR
+        $pdf->MultiCell(40, 5, $kode, 0, 'C'); // pakai MultiCell agar tidak trigger auto page break
+        $pdf->AddPage();
+        $pdf->SetMargins(0,0,0);
+        $pdf->SetAutoPageBreak(false);
+        $pdf->SetFont('Arial', 'B', 12);
+        $qr_width = 20; // mm
+        $x_qr = (40 - $qr_width) / 2;
+        $y_qr = 3;
+        $thisUrl = "".base_url()."";
+        $pdf->Image(''.$thisUrl.'public/qrcode/'.$gambar.'', $x_qr, $y_qr, $qr_width, $qr_width, 'PNG');
+
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->SetXY(0, $qr_width + 3 ); // atur posisi XY manual, tepat di bawah QR
+        $pdf->MultiCell(40, 5, $kode, 0, 'C'); // pakai MultiCell agar tidak trigger auto page break
+        $pdf->AddPage();
+        $pdf->SetMargins(0,0,0);
+        $pdf->SetAutoPageBreak(false);
+        $pdf->SetFont('Arial', 'B', 12);
+        $qr_width = 20; // mm
+        $x_qr = (40 - $qr_width) / 2;
+        $y_qr = 3;
+        $thisUrl = "".base_url()."";
+        $pdf->Image(''.$thisUrl.'public/qrcode/'.$gambar.'', $x_qr, $y_qr, $qr_width, $qr_width, 'PNG');
+
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->SetXY(0, $qr_width + 3 ); // atur posisi XY manual, tepat di bawah QR
+        $pdf->MultiCell(40, 5, $kode, 0, 'C'); // pakai MultiCell agar tidak trigger auto page break
+
+        $filename = 'qrcode_cetak_'.$kode.'.pdf';
+        $output_path = FCPATH . 'public/pdf/' . $filename;
+
+        $pdf->Output('F', $output_path); // simpan ke file
+        //$pdf->Output(); // untuk preview
+    }
     public function cetak($id_pesanan)
     {
         

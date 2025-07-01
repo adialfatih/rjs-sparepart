@@ -19,6 +19,8 @@ $route['cobascan'] = 'beranda/cobascan';
 $route['gudang/stok/spinning'] = 'beranda/stoksp';
 $route['gudang/stok/weaving'] = 'beranda/stokwv';
 
+$route['cetak/code/(:any)'] = 'nota/qrcode';
+
 
 $route['qrcode'] = 'qrcode_generator';
 $route['qrcode/generate'] = 'qrcode_generator/generate';
