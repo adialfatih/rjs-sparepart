@@ -112,6 +112,15 @@ class Beranda extends CI_Controller
   function cobascan(){
       $this->load->view('pages/scan_view', $data);
   }
+  function pemakaian(){
+      $this->load->view('pages/pemakaian_awal');
+  }
+  function pemakaian_sp(){
+      $this->load->view('pages/pemakaian_sp');
+  }
+  function pemakaian_wv(){
+      $this->load->view('pages/pemakaian_wv');
+  }
 
   
     

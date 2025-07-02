@@ -386,14 +386,49 @@
             if(tujuanGudang == ''){
                 Swal.fire('Gagal Menyimpan!', 'Tujuan penambahan stok tidak ada.!', 'error');
             } else {
-                if(kat!="" && nmsp!="" && hrg!="" && parseInt(pcs) > 0 && loc!=""){
+                if(kat!="" && nmsp!="" && hrg!="" && loc!=""){
                     if(qrcode==""){
                         Swal.fire('Gagal Menyimpan!', 'Anda harus mengisi QR Code.!', 'error');
                     } else {
                         if(qrcode2=="" || qrcode2=="null" || qrcode2=="0"){
                             Swal.fire('Info', 'Silahkan klik generate QR Code', 'info');
                         } else {
-
+                            var csrfName = $('#csrf_token_name').val();
+                            var csrfHash = $('#csrf_token_value').val();
+                            $.ajax({
+                                url: '<?php echo site_url("proses/inputStok"); ?>',
+                                type: 'POST',
+                                dataType: 'json',
+                                data: { tujuanGudang: tujuanGudang,
+                                        kat: kat,
+                                        nmsp: nmsp,
+                                        hrg: hrg,
+                                        pcs: pcs,
+                                        loc: loc,
+                                        qrcode2: qrcode2,
+                                        qrcode: qrcode,
+                                        [csrfName]: csrfHash },
+                                success: function(response) {
+                                    if(response.statusCode==200) {
+                                        Swal.fire('Berhasil Menyimpan!', response.msg, 'success');
+                                    } else {
+                                        Swal.fire('Gagal Menyimpan!', response.msg, 'error');
+                                    }
+                                    document.getElementById('kategoriSparepart').value = '';
+                                    document.getElementById('combobox').value = '';
+                                    document.getElementById('hrgpcs').value = '';
+                                    document.getElementById('pcsid').value = '';
+                                    document.getElementById('locid').value = '';
+                                    document.getElementById('qrcode').value = '';
+                                    document.getElementById('qr_code_data').value = '';
+                                    $('#qrcodeResult').html('');
+                                    loadData('<?=$navigasi2;?>');
+                                    $('#csrf_token_value').val(response.newCsrfHash);
+                                },
+                                error: function(xhr, status, error) {
+                                    Swal.fire('error code :21 '+error);
+                                }
+                            });
                         }
                     }
                 } else {
@@ -412,6 +447,26 @@
             } else {
                 el.value = bilangan;
             }
+        }
+        function saveAndPrint(initCode, kodeSparepart){
+            $.ajax({
+                url: '<?=base_url('cetak/code/'); ?>'+initCode+'/'+kodeSparepart+'',
+                type: 'get',
+                dataType: 'json',
+                data: { initCode: initCode, kodeSparepart: kodeSparepart },
+                success: function(response) {
+                    if(response.status == "error"){
+                        Swal.fire('Gagal Proses!', response.message, 'error');
+                    } else {
+                        Swal.fire('Menyimpan kode', 'Masuk dalam antrian cetak', 'success');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log(''+xhr);
+                    console.log(''+status);
+                    console.log(''+error);
+                }
+            });
         }
     </script>
 </body>

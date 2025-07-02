@@ -71,7 +71,7 @@
                     <span><strong><?=$navigasi2=='stoksp' ? 'Gudang Spinning':'Gudang Weaving';?><strong></span>
                 </div>
                 <form>
-                    <input type="hidden" id="tujuanGudang" value="<?=$navigasi2;?>">
+                    <input type="hidden" id="tujuanGudang" value="<?=$navigasi2=='stoksp' ? 'Spinning':'Weaving';?>">
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label">Kategori Barang</label>

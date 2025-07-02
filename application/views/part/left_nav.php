@@ -11,10 +11,10 @@
             <button class="theme-toggle" id="themeToggle">
                 <span class="material-icons">brightness_4</span>
             </button>
-            <div class="user-profile">
+            <!-- <div class="user-profile">
                 <div class="user-avatar">AD</div>
                 <span class="material-icons">arrow_drop_down</span>
-            </div>
+            </div> -->
         </div>
     </header>
 
@@ -68,7 +68,7 @@
                 </li>
                 
                 <li class="menu-item">
-                    <a href="#" class="menu-link">
+                    <a href="<?=base_url('pemakaian-sparepart');?>" class="menu-link">
                         <span class="material-icons menu-icon">receipt_long</span>
                         <span>Pemakaian</span>
                     </a>

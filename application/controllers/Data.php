@@ -608,8 +608,10 @@ class Data extends CI_Controller
     function showDataStok(){
         $show = $this->input->get('sp', TRUE);
         if($show=="stoksp"){
+            $initial_kode = "SP";
             $record = $this->db->query("SELECT * FROM `table_sparepart` WHERE kodesp IN (SELECT kodesp FROM stok_sparepart WHERE lokasi='Spinning')");
         } else {
+            $initial_kode = "WV";
             $record = $this->db->query("SELECT * FROM `table_sparepart` WHERE kodesp IN (SELECT kodesp FROM stok_sparepart WHERE lokasi='Weaving')");
         }
         if($record->num_rows() > 0){
@@ -623,7 +625,13 @@ class Data extends CI_Controller
                 echo "<td>".$value->nama_sparepart."</td>";
                 echo "<td>".number_format($jml_stok)."</td>";
                 echo "<td>".$value->satuan_pemakaian."</td>";
-                echo "<td><a href='javascript:void(0);' style='text-decoration:none;' class='btn btn-primary'>Cetak Barcode</a></td>";
+                ?>
+                <td>
+                    <a href="javascript:void(0);" style="text-decoration:none;" class="btn btn-primary" onclick="saveAndPrint('<?=$initial_kode;?>','<?=$kdsp;?>')">
+                        Cetak Barcode
+                    </a>
+                </td>
+                <?php
                 echo "</tr>";
                 $no++;
                 

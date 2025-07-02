@@ -15,11 +15,16 @@ $route['history/ke/spinning'] = 'showpage/rwyt_kesp';
 $route['history/ke/weaving'] = 'showpage/rwyt_kewv';
 $route['tarik/ke/weaving'] = 'beranda/kewv';
 $route['cobascan'] = 'beranda/cobascan';
+$route['pemakaian-sparepart'] = 'beranda/pemakaian';
+$route['pemakaian-sp'] = 'beranda/pemakaian_sp';
+$route['pemakaian-wv'] = 'beranda/pemakaian_wv';
+$route['proses-pemakaian'] = 'proses/use_sparepart';
+$route['proses-simpan-pemakaian'] = 'proses/save_pemakaian';
 
 $route['gudang/stok/spinning'] = 'beranda/stoksp';
 $route['gudang/stok/weaving'] = 'beranda/stokwv';
 
-$route['cetak/code/(:any)'] = 'nota/qrcode';
+$route['cetak/code/(:any)/(:any)'] = 'nota/qrcode';
 
 
 $route['qrcode'] = 'qrcode_generator';
