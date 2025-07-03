@@ -13,6 +13,11 @@ $route['daftar'] = 'beranda/daftar';
 $route['tarik/ke/spinning'] = 'beranda/kesp';
 $route['history/ke/spinning'] = 'showpage/rwyt_kesp';
 $route['history/ke/weaving'] = 'showpage/rwyt_kewv';
+
+$route['user-login'] = 'showpage/loginuser';proses-inputuser
+$route['proses-inputuser'] = 'proses/inputuserbaru';
+
+
 $route['tarik/ke/weaving'] = 'beranda/kewv';
 $route['cobascan'] = 'beranda/cobascan';
 $route['pemakaian-sparepart'] = 'beranda/pemakaian';

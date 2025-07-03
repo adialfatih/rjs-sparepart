@@ -128,7 +128,7 @@
                     `;
                     $('#inputPemakaian').hide();
                 } else {
-                    resultContainer.innerHTML = `<strong>✅ Sukses!</strong> Hasil Scan : ${decodedText}`;
+                    resultContainer.innerHTML = `✅ <strong>${decodedText}</strong> Ditemukan`;
                     $('#inputPemakaian').html('Loading...');
                     $('#inputPemakaian').show();
                     $.ajax({
@@ -195,6 +195,8 @@
                     var nmOpt = $('#nmOpt').val();
                     var nomc = $('#nomc').val();
                     var bekas = $('#bekas').val();
+                    var ket = $('#ket').val();
+                    var jmlitembekas = $('#jmlitembekas').val();
                     if(qrcode!="" && stokAsli!="" && jmlPakai!="" && nmOpt!="" && nomc!="" && bekas!=""){
                         $.ajax({
                             url: '<?=base_url('proses-simpan-pemakaian'); ?>',
@@ -205,9 +207,20 @@
                                 "jmlPakai":jmlPakai,
                                 "nmOpt":nmOpt,
                                 "nomc":nomc,
+                                "ket":ket,
+                                "jmlitembekas":jmlitembekas,
+                                "dep":"Spinning",
                                 "bekas":bekas },
                             success: function(response) {
-                                $('#inputPemakaian').html(''+response);
+                                if(response.statusCode == 200){
+                                    Swal.fire('Berhasil', 'Menyimpan proses pemakaian sparepart', 'success').then((result) => {
+										location.reload();
+									});
+                                } else {
+                                    Swal.fire('Gagal .!', response.msg, 'error').then((result) => {
+										location.reload();
+									});
+                                }
                             },
                             error: function(xhr, status, error) {
                                 console.log(''+xhr);

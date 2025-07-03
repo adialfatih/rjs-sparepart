@@ -66,6 +66,20 @@
                         <span>20% from last week</span>
                     </div>
                 </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Permintaan</h3>
+                        <div class="card-icon danger">
+                            <span class="material-icons">assignment</span>
+                        </div>
+                    </div>
+                    <div class="card-value">12</div>
+                    <div class="card-footer positive">
+                        <span class="material-icons">trending_up</span>
+                        <span>20% from last week</span>
+                    </div>
+                </div>
             </div> -->
 
             <!-- Recent Transactions Table -->
@@ -199,6 +213,7 @@
             <div class="table-container" style="margin-top: 1.5rem;">
                 <h3 class="table-title">Welcome To Dashboard</h3>
                 <div style="display: flex; flex-wrap: wrap; gap: 10px; padding: 1rem 0;">
+                    Anda login sebagai <strong><?=ucwords($sess_nama);?></strong>
                     <!-- <button class="btn btn-primary">
                         <span class="material-icons">save</span>
                         <span>Primary</span>

@@ -34,6 +34,7 @@ class Login extends CI_Controller
                 $this->session->set_userdata($data_session);
                 $response = [
                     'status' => 'success',
+                    'tipeLogin' => $dt['akses'],
                     'message' => 'Login berhasil.',
                     'newCsrfHash' => $this->security->get_csrf_hash()
                 ];

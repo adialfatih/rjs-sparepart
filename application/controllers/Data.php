@@ -435,7 +435,8 @@ class Data extends CI_Controller
                         <td><?=$val->yg_narik;?></td>
                         <td><?=$rrow['kategori_sp'];?></td>
                         <td><?=$rrow['nama_sparepart'];?></td>
-                        <td data-order="<?=$val->satuan_pcs;?>"><?=$val->satuan_pcs;?> <?=$rrow['satuan_pemakaian'];?></td>
+                        <td data-order="<?=$val->satuan_pcs;?>"><?=$val->satuan_pcs;?></td>
+                        <td><?=$rrow['satuan_pemakaian'];?></td>
                         <td><button type="button" class="btn btn-primary" onclick="viewDetil('<?=$id;?>')">View</button></td>
                     </tr>
                     <?php 
@@ -619,12 +620,19 @@ class Data extends CI_Controller
             foreach ($record->result() as $key => $value) {
                 $kdsp = $value->kodesp;
                 $jml_stok = $this->db->query("SELECT COUNT(idstok) AS jml FROM stok_sparepart WHERE kodesp='$kdsp'")->row("jml");
+                $barcode = $this->db->query("SELECT DISTINCT qrcode FROM stok_sparepart WHERE kodesp='$kdsp'");
+                if($barcode->num_rows() == 1){
+                    $showQR = $barcode->row("qrcode");
+                } else {
+                    $showQR = "Ada ".$barcode->num_rows()." Kode";
+                }
                 echo "<tr>";
                 echo "<td>".$no."</td>";
                 echo "<td>".$value->kategori_sp."</td>";
                 echo "<td>".$value->nama_sparepart."</td>";
                 echo "<td>".number_format($jml_stok)."</td>";
                 echo "<td>".$value->satuan_pemakaian."</td>";
+                echo "<td>".$showQR."</td>";
                 ?>
                 <td>
                     <a href="javascript:void(0);" style="text-decoration:none;" class="btn btn-primary" onclick="saveAndPrint('<?=$initial_kode;?>','<?=$kdsp;?>')">

@@ -34,6 +34,7 @@
                             <th>Nama Item</th>
                             <th>Qty</th>
                             <th>Satuan</th>
+                            <th>Kode</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>

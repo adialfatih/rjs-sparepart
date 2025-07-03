@@ -117,12 +117,16 @@ class Proses extends CI_Controller
                 ?>
                 <input type="hidden" id="qrCodeScan" value="<?=$decodedText;?>">
                 <input type="hidden" id="stokAsli" value="<?=$jml_stok;?>">
-                <div style="width:100%;display:flex;flex-direction:column;gap:5px;margin-top:30px;align-items:flex-start;justify-content:flex-start;">
+                <div style="width:100%;display:flex;flex-direction:column;gap:5px;margin-top:30px;align-items:flex-start;justify-content:flex-start;text-align:left;">
                     <span>Nama Sparepart : <strong><?=$nmsp;?></strong></span>
                     <span>Kategori : <strong><?=$kat;?></strong></span>
+                    <?php if($jml_stok>0){?>
                     <span>Sisa Stok : <strong><?=$jml_stok;?></strong> <?=$pcs;?></span>
+                    <?php } else { ?>
+                    <span style="color:red;">Sisa Stok : <strong><?=$jml_stok;?></strong> <?=$pcs;?></span>
+                    <?php } ?>
                     <label for="jmlPakai" style="margin-top:15px;">Jumlah Pengambilan</label>
-                    <input type="text" class="iptform" placeholder="Masukan jumlah yang di ambil" id="jmlPakai">
+                    <input type="number" class="iptform" placeholder="Masukan jumlah yang di ambil" id="jmlPakai">
                     <label for="nmOpt">Nama Operator</label>
                     <input type="text" class="iptform" placeholder="Masukan operator yang ambil" id="nmOpt">
                     <label for="nomc">Nomor Mesin</label>
@@ -133,7 +137,14 @@ class Proses extends CI_Controller
                         <option value="rusak">Ada - Rusak</option>
                         <option value="reuseable">Ada - Bisa Digunakan Lagi</option>
                     </select>
+                    <label for="jmlitembekas">Jumlah Item Bekas</label>
+                    <input type="number" class="iptform" value="0" id="jmlitembekas">
+                    <label for="ket">Keterangan (opsional)</label>
+                    <textarea name="ket" id="ket" placeholder="Masukan keterangan / catatan khusus" class="iptform"></textarea>
+                    <?php if($jml_stok>0){?>
                     <button style="width:100%;margin-top:15px;" onclick="simpanPemakaian()">Simpan</button>
+                    <?php } ?>
+                    
                 </div>
                 <?php
             } else {
@@ -148,12 +159,86 @@ class Proses extends CI_Controller
         $jmlPakai   = trim($this->input->get('jmlPakai', TRUE));
         $nmOpt      = trim($this->input->get('nmOpt', TRUE));
         $nomc       = trim($this->input->get('nomc', TRUE));
+        $dep        = trim($this->input->get('dep', TRUE));
+        $jmlitembekas= trim($this->input->get('jmlitembekas', TRUE));
+        $nomc       = strtoupper($nomc);
+        $nomc       = str_replace(' ', '', $nomc);
+        if (preg_match('/^([A-Z])(\d{1,2})$/', $nomc, $matches)) {
+            $huruf = $matches[1];
+            $angka = str_pad($matches[2], 2, '0', STR_PAD_LEFT);
+            $nomc  = $huruf . $angka;
+        }
         $bekas      = trim($this->input->get('bekas', TRUE));
+        $ket        = $this->input->get('ket', TRUE);
         $username   = $this->session->userdata('username');
-
+        $codePakai  = $this->data_model->acakKode(13);
+        $jmlOnStok  = $this->db->query("SELECT COUNT(qrcode) AS jml FROM stok_sparepart WHERE qrcode='$qrcode'")->row("jml");
         if($qrcode!="" && $stokAsli!="" && $jmlPakai!="" && $nmOpt!="" && $nomc!="" && $bekas!="" && $username!=""){
-            if($jmlPakai <= $stokAsli){
+            if($jmlPakai>0 && $jmlPakai <= $stokAsli && $jmlPakai <= $jmlOnStok){
+                $kode_SP = $this->db->query("SELECT kodesp,qrcode FROM stok_sparepart WHERE qrcode='$qrcode' LIMIT 1")->row("kodesp");
+                $this->data_model->saved('riwayat_pemakaian',[
+                    'tanggal_pakai' => date('Y-m-d H:i:s'),
+                    'user_login'    => $username,
+                    'departement'   => $dep,
+                    'kodesp'        => $kode_SP,
+                    'qrcode'        => $qrcode,
+                    'no_mc'         => $nomc,
+                    'jumlah_sp'     => $jmlPakai,
+                    'codepakai'     => $codePakai,
+                    'operator'      => $nmOpt,
+                    'keterangan'    => $ket,
+                    'balik_sp'      => $bekas,
+                    'jml_balik_sp'  => $bekas==0 ? '0':$jmlitembekas
+                ]);
+                $all_pakai = $this->db->query("SELECT * FROM stok_sparepart WHERE qrcode='$qrcode' ORDER BY idstok LIMIT $jmlPakai");
+                foreach($all_pakai->result() as $val){
+                    $idstok         = $val->idstok;
+                    $kodesp         = $val->kodesp;
+                    $qrcode         = $val->qrcode;
+                    $codeinput      = $val->codeinput;
+                    $lokasi         = $val->lokasi;
+                    $penempatan     = $val->penempatan;
+                    $harga_satuan   = $val->harga_satuan;
+                    $this->data_model->saved('stok_sparepart_pakai',[
+                        'idstok'        => $idstok,
+                        'kodesp'        => $kodesp,
+                        'qrcode'        => $qrcode,
+                        'codeinput'     => $codeinput,
+                        'lokasi'        => $lokasi,
+                        'penempatan'    => $penempatan,
+                        'harga_satuan'  => $harga_satuan,
+                        'codepakai'     => $codePakai
+                    ]);
+                    $this->db->query("DELETE FROM stok_sparepart WHERE idstok='$idstok'");
+                    if($bekas == "reuseable"){
+                        $this->data_model->saved('stok_sparepart_bekas',[
+                            'kodesp'        => $kodesp,
+                            'qrcode'        => $qrcode,
+                            'codeinput'     => $codePakai,
+                            'lokasi'        => $dep,
+                            'penempatan'    => $dep,
+                            'harga_satuan'  => 0,
+                            'codepakai'     => $codePakai
+                        ]);
+                    } else {
+                        if($bekas == "rusak"){
+                            $this->data_model->saved('stok_sparepart_rusak',[
+                                'kodesp'        => $kodesp,
+                                'qrcode'        => $qrcode,
+                                'codeinput'     => $codePakai,
+                                'lokasi'        => $dep,
+                                'penempatan'    => $dep,
+                                'harga_satuan'  => 0,
+                                'codepakai'     => $codePakai
+                            ]);
+                        }
+                    }
+                }
                 
+                $response = [
+                    'statusCode' => 200,
+                    'msg' => 'success'
+                ];
             } else {
                 $response = [
                     'statusCode' => 501,
@@ -168,5 +253,15 @@ class Proses extends CI_Controller
         }
         echo json_encode($response);
   }
+
+  function inputuserbaru(){
+
+            $response = [
+                'status' => 'success',
+                'msg' => $msg,
+                'newCsrfHash' => $this->security->get_csrf_hash()
+            ];
+        echo json_encode($response);
+  } //end
 
 }

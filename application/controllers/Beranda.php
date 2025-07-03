@@ -27,10 +27,11 @@ class Beranda extends CI_Controller
             'navigasi'      => 'dashboard',
             'navigasi2'      => ''
         );
+        if($akses == "satpam"){ $this->load->view('pages/pemakaian_awal'); } else {
         $this->load->view('part/main_header', $data);
         $this->load->view('part/left_nav', $data);
         $this->load->view('beranda_view', $data); 
-        $this->load->view('part/main_js', $data);
+        $this->load->view('part/main_js', $data);}
   } //end
   function kesp(){ 
         $akses = $this->session->userdata('akses');
@@ -46,10 +47,11 @@ class Beranda extends CI_Controller
             'navigasi2'     => 'tariksp'
             //'qrdata'        => $qr
         );
+        if($akses == "satpam"){ $this->load->view('pages/pemakaian_awal'); } else {
         $this->load->view('part/main_header', $data);
         $this->load->view('part/left_nav', $data);
         $this->load->view('pages/tarik_sparepart', $data); 
-        $this->load->view('part/main_js2', $data);
+        $this->load->view('part/main_js2', $data); }
   } //end
   function kewv(){ 
         $akses = $this->session->userdata('akses');
@@ -65,10 +67,11 @@ class Beranda extends CI_Controller
             'navigasi2'     => 'tarikwv'
            //'qrdata'        => $qr
         );
+        if($akses == "satpam"){ $this->load->view('pages/pemakaian_awal'); } else {
         $this->load->view('part/main_header', $data);
         $this->load->view('part/left_nav', $data);
         $this->load->view('pages/tarik_sparepart', $data); 
-        $this->load->view('part/main_js2', $data);
+        $this->load->view('part/main_js2', $data); }
   } //end
   function stokwv(){ 
         $akses = $this->session->userdata('akses');
@@ -84,10 +87,11 @@ class Beranda extends CI_Controller
             'navigasi2'     => 'stokwv'
            //'qrdata'        => $qr
         );
+        if($akses == "satpam"){ $this->load->view('pages/pemakaian_awal'); } else {
         $this->load->view('part/main_header', $data);
         $this->load->view('part/left_nav', $data);
         $this->load->view('pages/stok_sparepart', $data); 
-        $this->load->view('part/main_js3', $data);
+        $this->load->view('part/main_js3', $data); }
   } //end
   function stoksp(){ 
         $akses = $this->session->userdata('akses');
@@ -103,10 +107,11 @@ class Beranda extends CI_Controller
             'navigasi2'     => 'stoksp'
            //'qrdata'        => $qr
         );
+        if($akses == "satpam"){ $this->load->view('pages/pemakaian_awal'); } else {
         $this->load->view('part/main_header', $data);
         $this->load->view('part/left_nav', $data);
         $this->load->view('pages/stok_sparepart', $data); 
-        $this->load->view('part/main_js3', $data);
+        $this->load->view('part/main_js3', $data); }
   } //end
 
   function cobascan(){

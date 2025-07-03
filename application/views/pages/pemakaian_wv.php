@@ -74,6 +74,17 @@
             font-size: 0.8em;
             color: #888;
         }
+        .iptform {
+            width: 90%;
+            padding:10px;
+            border-radius:4px;
+            outline:none;
+            border:1px solid #ccc;
+        }
+        label {
+            color:#0056b3;
+            font-weight:bold;
+        }
     </style>
 </head>
 <body>
@@ -117,7 +128,7 @@
                     `;
                     $('#inputPemakaian').hide();
                 } else {
-                    resultContainer.innerHTML = `<strong>✅ Sukses!</strong> Hasil Scan : ${decodedText}`;
+                    resultContainer.innerHTML = `✅ <strong>${decodedText}</strong> Ditemukan`;
                     $('#inputPemakaian').html('Loading...');
                     $('#inputPemakaian').show();
                     $.ajax({
@@ -166,6 +177,64 @@
             // Menjalankan pemindai
             html5QrcodeScanner.render(onScanSuccess, onScanFailure);
         });
+        function simpanPemakaian(){
+            Swal.fire({
+                title: "Simpan ?",
+                text: "Pastikan data yang anda isi sudah benar",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Simpan",
+                canlcelButtonText: "Batal"
+                }).then((result) => {
+                if (result.isConfirmed) {
+                    var qrcode = $('#qrCodeScan').val();
+                    var stokAsli = $('#stokAsli').val();
+                    var jmlPakai = $('#jmlPakai').val();
+                    var nmOpt = $('#nmOpt').val();
+                    var nomc = $('#nomc').val();
+                    var bekas = $('#bekas').val();
+                    var ket = $('#ket').val();
+                    var jmlitembekas = $('#jmlitembekas').val();
+                    if(qrcode!="" && stokAsli!="" && jmlPakai!="" && nmOpt!="" && nomc!="" && bekas!=""){
+                        $.ajax({
+                            url: '<?=base_url('proses-simpan-pemakaian'); ?>',
+                            type: 'get',
+                            dataType: 'json',
+                            data: { "qrcode":qrcode,
+                                "stokAsli":stokAsli,
+                                "jmlPakai":jmlPakai,
+                                "nmOpt":nmOpt,
+                                "nomc":nomc,
+                                "ket":ket,
+                                "jmlitembekas":jmlitembekas,
+                                "dep":"Weaving",
+                                "bekas":bekas },
+                            success: function(response) {
+                                if(response.statusCode == 200){
+                                    Swal.fire('Berhasil', 'Menyimpan proses pemakaian sparepart', 'success').then((result) => {
+										location.reload();
+									});
+                                } else {
+                                    Swal.fire('Gagal .!', response.msg, 'error').then((result) => {
+										location.reload();
+									});
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                console.log(''+xhr);
+                                console.log(''+status);
+                                console.log(''+error);
+                                $('#inputPemakaian').hide();
+                            }
+                        });
+                    } else {
+                        Swal.fire('Anda belum mengisi semua data dengan benar.!');
+                    }
+                }
+            });
+        }
     </script>
 
 </body>

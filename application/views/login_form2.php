@@ -112,9 +112,14 @@
 							success: function(response) {
 								console.log(response);
 								if(response.status == 'success') {
+                                    if(response.tipeLogin == 'satpam'){
+                                        Swal.fire('Login Success!', '', 'success').then((result) => {
+                                            window.location.href = '<?=base_url('pemakaian-sparepart');?>';
+                                        });
+                                    } else {
 									Swal.fire('Login Success!', '', 'success').then((result) => {
 										window.location.href = '<?=base_url('dashboard');?>';
-									});
+									}); }
 								} else {
 									Swal.fire('Login Error!', response.message, 'error');
 								}

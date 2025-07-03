@@ -37,6 +37,7 @@
                             <th>Kategori</th>
                             <th>Nama Sparepart</th>
                             <th>Jumlah</th>
+                            <th>Satuan</th>
                             <th>#</th>
                         </tr>
                     </thead>

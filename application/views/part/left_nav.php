@@ -94,13 +94,13 @@
                 
                 <li class="menu-title">System</li>
                 <li class="menu-item">
-                    <a href="#" class="menu-link">
+                    <a href="<?=base_url('user-login');?>" class="menu-link <?=$navigasi=='user-login' ? 'active':'';?>">
                         <span class="material-icons menu-icon">people</span>
                         <span>Pengguna</span>
                     </a>
                 </li>
                 <li class="menu-item">
-                    <a href="#" class="menu-link">
+                    <a href="#" class="menu-link ">
                         <span class="material-icons menu-icon">settings</span>
                         <span>Pengaturan</span>
                     </a>
