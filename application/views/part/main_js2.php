@@ -100,7 +100,7 @@
             loadingOverlay.classList.add('show');
             setTimeout(() => {
                 loadingOverlay.classList.remove('show');
-            }, 1000);
+            }, 800);
         }
 
         // Simulate loading
@@ -461,8 +461,29 @@
             console.error("Camera start failed", err);
         });
     });
-    
-    
+    function viewDetil(id){
+        $('#modalDetilBody').html('Loading...');
+        $('#addSparepartModal221').addClass('show');
+        $.ajax({
+            url: '<?=base_url("data/showDetilPenarikan"); ?>',
+            type: 'GET',
+            data: { "id":id },
+            success: function(response) {
+                $('#modalDetilBody').html(response);
+            },
+            error: function(xhr, status, error) {
+                    console.log(''+error);
+                    console.log(''+xhr);
+                    console.log(''+status);
+                }
+            });
+        
+        //addSparepartModal.classList.add('show');
+    }
+    function closeModal(mdl){ $('#'+mdl+'').removeClass('show');}
+    function hapusProsesTarik(inputanDari, id){
+        
+    }
     </script>
 </body>
 </html>

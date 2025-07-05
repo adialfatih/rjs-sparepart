@@ -127,11 +127,11 @@
             </div>
             <div class="modal-body">
                 <p id="hapusUserNotif"></p>
-                <input type="text" id="idusers" value="0">
+                <input type="hidden" id="idusers" value="0">
             </div>
             <div class="modal-footer">
                 <button class="btn btn-outline" id="cancelConfirmModal">Batal</button>
-                <button class="btn btn-danger">Hapus</button>
+                <button class="btn btn-danger" id="hapusthisuser">Hapus</button>
             </div>
         </div>
     </div>

@@ -136,6 +136,32 @@
             });
         }
        
+       $('#hapusthisuser').click(function() {
+            var idusers = $('#idusers').val();
+            var csrfName = $('#csrf_token_name').val();
+			var csrfHash = $('#csrf_token_value').val();
+            $.ajax({
+				url: '<?=base_url('delete-inputuser');?>',
+				type: 'POST',
+				dataType: 'json',
+				data: { 'idusers': idusers, [csrfName]: csrfHash },
+				success: function(response) {
+					console.log(response);
+					if(response.status == 'success') {
+						Swal.fire('Berhasil Menghapus!', response.msg, 'success').then((result) => {
+                            location.reload();
+                        });;
+					} else {
+						Swal.fire('Gagal Menghapus!', response.msg, 'error');
+					}
+					$('#csrf_token_value').val(response.newCsrfHash);
+				},
+					error: function() {
+						Swal.fire('Token Error 22', '', 'error');
+					}
+				});
+       });
+
         $('#simpanUser').click(function() {
             console.log('tombol simpanUser di klik');
             var namauser = $('#namauser').val();
@@ -157,11 +183,18 @@
     					[csrfName]: csrfHash
 					},
 					success: function(response) {
+						console.log('nama : '+namauser);
+						console.log('user : '+usernameid);
+						console.log('hak : '+hakakses);
+						console.log('pass : '+passwordid);
+						console.log(namauser);
 						console.log(response);
 						if(response.status == 'success') {
-							Swal.fire('Berhasil Menyimpan!', response.message, 'success');
+							Swal.fire('Berhasil Menyimpan!', response.msg, 'success').then((result) => {
+                                location.reload();
+                            });;
 						} else {
-							Swal.fire('Gagal Menyimpan!', response.message, 'error');
+							Swal.fire('Gagal Menyimpan!', response.msg, 'error');
 						}
 						$('#csrf_token_value').val(response.newCsrfHash);
 					},

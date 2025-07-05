@@ -426,7 +426,7 @@ class Data extends CI_Controller
                 foreach($qry->result() as $key => $val){
                     $no = $key + 1;
                     $kdsp = $val->kodesp;
-                    $id = $val->rwtyk;
+                    $id = $val->id_rwtyk;
                     $rrow = $this->data_model->get_byid('table_sparepart', ['kodesp'=>$kdsp])->row_array();
                     ?>
                     <tr>
@@ -626,6 +626,7 @@ class Data extends CI_Controller
                 } else {
                     $showQR = "Ada ".$barcode->num_rows()." Kode";
                 }
+                $counting = $this->db->query("SELECT file_name FROM table_cetak WHERE file_name LIKE '%$kdsp%'")->num_rows();
                 echo "<tr>";
                 echo "<td>".$no."</td>";
                 echo "<td>".$value->kategori_sp."</td>";
@@ -636,7 +637,7 @@ class Data extends CI_Controller
                 ?>
                 <td>
                     <a href="javascript:void(0);" style="text-decoration:none;" class="btn btn-primary" onclick="saveAndPrint('<?=$initial_kode;?>','<?=$kdsp;?>')">
-                        Cetak Barcode
+                        Cetak Barcode <?=$counting>0 ? '('.$counting.')':'';?>
                     </a>
                 </td>
                 <?php
@@ -644,6 +645,128 @@ class Data extends CI_Controller
                 $no++;
                 
             }
+        }
+    } //end
+
+    function showDetilPenarikan(){
+        $id = $this->input->get('id', TRUE);
+        $akses = $this->session->userdata('akses');
+        $yg_login = $this->session->userdata('username');
+        $cek = $this->data_model->get_byid('riwayat_tarik', ['id_rwtyk'=>$id]);
+        if($cek->num_rows() == 1){
+            $id_tarik       = $cek->row("id_rwtyk");
+            $id_detilpem    = $cek->row("id_detilpem");
+            $dt1            = $this->data_model->get_byid('detil_pembelian',['id_detilpem'=>$id_detilpem])->row_array();
+            $item           = strtoupper($dt1['nama_sparepart']);
+            $cdbl           = $dt1['kode_beli'];
+            $qty            = $dt1['qty'];
+            $satuan         = $dt1['satuan'];
+            $harga_qty      = $dt1['harga_qty'];
+            $total_harga    = $dt1['total_harga'];
+            $lokasi         = $dt1['lokasi'];
+            $untuk_divisi   = $dt1['untuk_divisi'];
+            $pembelian      = $this->data_model->get_byid('pembelian',['kode_beli'=>$cdbl])->row_array();
+            ?>
+            <div style="width:100%;background:#ccc;display:flex;flex-direction:column;gap:5px;padding:15px;border-radius:4px;margin-bottom:15px;">
+                <table>
+                    <tr>
+                        <td style="font-size:20px;" colspan="2">Data Pembelian</td>
+                    </tr>
+                    <tr>
+                        <td style="width:200px;">Nama Item</td>
+                        <td><strong><?=$item;?></strong></td>
+                    </tr>
+                    <tr>
+                        <td style="width:200px;">Jumlah Pembelian</td>
+                        <td><strong><?=$qty;?></strong> <?=$satuan;?></td>
+                    </tr>
+                    <?php if($akses=="admin"){?>
+                    <tr>
+                        <td style="width:200px;">Harga per Satuan</td>
+                        <td>Rp. <strong><?=number_format($harga_qty);?></strong></td>
+                    </tr>
+                    <tr>
+                        <td style="width:200px;">Harga Total</td>
+                        <td>Rp. <strong><?=number_format($total_harga);?></strong></td>
+                    </tr>
+                    <?php } ?>
+                    <tr>
+                        <td style="width:200px;">Lokasi sekarang</td>
+                        <td><strong><?=$lokasi;?></strong></td>
+                    </tr>
+                    <tr>
+                        <td style="width:200px;">Divisi</td>
+                        <td><strong><?=$untuk_divisi;?></strong></td>
+                    </tr>
+                    <tr>
+                        <td style="width:200px;">Tanggal Datang</td>
+                        <td><strong><?=date('d M Y', strtotime($pembelian['tgl_datang']));?></strong></td>
+                    </tr>
+                    <?php if($akses=="admin"){?>
+                    <tr>
+                        <td style="width:200px;">Tanggal Nota</td>
+                        <td><strong><?=date('d M Y', strtotime($pembelian['tgl_nota']));?></strong></td>
+                    </tr>
+                    <tr>
+                        <td style="width:200px;">Nomor Nota</td>
+                        <td><strong><?=$pembelian['no_nota_sj'];?></strong></td>
+                    </tr>
+                    <tr>
+                        <td style="width:200px;">Supplier</td>
+                        <td><strong><?=strtoupper($pembelian['supp']);?></strong></td>
+                    </tr>
+                    <?php } ?>
+                    <tr>
+                        <td colspan="2" style="font-size:13px;text-align:right;">
+                            Diinput oleh : <strong><?=ucfirst($pembelian['yginput']);?></strong> pada tanggal <strong><?=date('d M Y', strtotime($pembelian['tgl_input']));?></strong> jam <strong><?=date('H:i', strtotime($pembelian['tgl_input']));?></strong>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div style="width:100%;background:#ccc;display:flex;flex-direction:column;gap:5px;padding:15px;border-radius:4px;margin-bottom:15px;">
+                <table>
+                    <tr>
+                        <td style="font-size:20px;" colspan="2">Data Penarikan Ke Gudang <?=$cek->row("tujuan");?></td>
+                    </tr>
+                    <?php
+                    $kodesp = $cek->row("kodesp");
+                    $sp = $this->data_model->get_byid('table_sparepart',['kodesp'=>$kodesp])->row_array();
+                    $yg_narik = $cek->row("yg_narik");
+                    ?>
+                    <tr>
+                        <td style="width:200px;">Tanggal Tarik</td>
+                        <td><strong><?=date('d M Y', strtotime($cek->row("tanggal_tarik")));?></strong></td>
+                    </tr>
+                    <tr>
+                        <td style="width:200px;">Kategori</td>
+                        <td><strong><?=$sp['kategori_sp'];?></strong></td>
+                    </tr>
+                    <tr>
+                        <td style="width:200px;">Nama Item</td>
+                        <td><strong><?=$sp['nama_sparepart'];?></strong></td>
+                    </tr>
+                    <tr>
+                        <td style="width:200px;">Jumlah Tarik</td>
+                        <td><strong><?=$cek->row("satuan_pcs");?></strong> <?=$sp['satuan_pemakaian'];?></td>
+                    </tr>
+                    <tr>
+                        <td style="width:200px;">Penempatan</td>
+                        <td><strong><?=$cek->row("penempatan");?></strong></td>
+                    </tr>
+                    <tr>
+                        <td style="width:200px;">QR Code</td>
+                        <td><strong><?=$cek->row("kode_qr");?></strong></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="font-size:13px;text-align:right;">
+                            Ditarik oleh : <strong><?=$yg_narik;?></strong> pada tanggal <strong><?=date('d M Y', strtotime($cek->row("tanggal_input")));?></strong> jam <strong><?=date('H:i', strtotime($cek->row("tanggal_input")));?></strong>. <a href="javascript:void(0);" onclick="hapusProsesTarik('<?=$yg_narik;?>','<?=$id_tarik;?>')" style="text-decoration:none;color:red;">Hapus / Batal Tarik</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <?php
+        } else {
+            echo "Token Error..!";
         }
     }
 }

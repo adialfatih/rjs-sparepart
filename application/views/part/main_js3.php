@@ -459,6 +459,7 @@
                         Swal.fire('Gagal Proses!', response.message, 'error');
                     } else {
                         Swal.fire('Menyimpan kode', 'Masuk dalam antrian cetak', 'success');
+                        loadData('<?=$navigasi2;?>');
                     }
                 },
                 error: function(xhr, status, error) {

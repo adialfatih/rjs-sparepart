@@ -14,8 +14,9 @@ $route['tarik/ke/spinning'] = 'beranda/kesp';
 $route['history/ke/spinning'] = 'showpage/rwyt_kesp';
 $route['history/ke/weaving'] = 'showpage/rwyt_kewv';
 
-$route['user-login'] = 'showpage/loginuser';proses-inputuser
+$route['user-login'] = 'showpage/loginuser';
 $route['proses-inputuser'] = 'proses/inputuserbaru';
+$route['delete-inputuser'] = 'proses/deluserbaru';
 
 
 $route['tarik/ke/weaving'] = 'beranda/kewv';

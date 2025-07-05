@@ -141,6 +141,7 @@ class Proses extends CI_Controller
                     <input type="number" class="iptform" value="0" id="jmlitembekas">
                     <label for="ket">Keterangan (opsional)</label>
                     <textarea name="ket" id="ket" placeholder="Masukan keterangan / catatan khusus" class="iptform"></textarea>
+                    <span style="font-size:13px;">Anda login sebagai : <strong><?=ucfirst($this->session->userdata('username'));?></strong></span>
                     <?php if($jml_stok>0){?>
                     <button style="width:100%;margin-top:15px;" onclick="simpanPemakaian()">Simpan</button>
                     <?php } ?>
@@ -253,14 +254,60 @@ class Proses extends CI_Controller
         }
         echo json_encode($response);
   }
-
-  function inputuserbaru(){
-
+  function deluserbaru(){
+        $id      = $this->input->post('idusers', TRUE);
+        $cekusername = $this->data_model->get_byid('akses_user',['sha1(iduser)'=>$id]);
+        if($cekusername->num_rows() == 1){
+            $iduser = $cekusername->row("iduser");
+            $this->db->query("DELETE FROM akses_user WHERE iduser='$iduser'");
             $response = [
                 'status' => 'success',
-                'msg' => $msg,
+                'msg' => 'User dihapus dari akses login',
                 'newCsrfHash' => $this->security->get_csrf_hash()
             ];
+        } else {
+            $response = [
+                'status' => 'error',
+                'msg' => 'Token Error',
+                'newCsrfHash' => $this->security->get_csrf_hash()
+            ];
+        }
+        echo json_encode($response);
+  }
+
+  function inputuserbaru(){
+        $nama      = trim($this->input->post('namauser', TRUE));
+        $username  = trim($this->input->post('usernameid', TRUE));
+        $hakakses  = trim($this->input->post('hakakses', TRUE));
+        $pass      = trim($this->input->post('passwordid', TRUE));
+        if($nama!="" && $username!="" && $hakakses!="" && $pass!=""){
+            $cekusername = $this->data_model->get_byid('akses_user',['username'=>$username]);
+            if($cekusername->num_rows() == 0){
+                $this->data_model->saved('akses_user',[
+                    'username'  => strtolower($username),
+                    'password'  => sha1($pass),
+                    'nama_user' => strtoupper($nama),
+                    'akses'     => $hakakses,
+                ]);
+                $response = [
+                    'status' => 'success',
+                    'msg' => 'Username dan password bisa digunakan untuk login',
+                    'newCsrfHash' => $this->security->get_csrf_hash()
+                ];
+            } else {
+                $response = [
+                    'status' => 'error',
+                    'msg' => 'Username sudah digunakan.!',
+                    'newCsrfHash' => $this->security->get_csrf_hash()
+                ];
+            }
+        } else {
+            $response = [
+                'status' => 'error',
+                'msg' => 'Anda harus mengisi semua data dengan benar.!',
+                'newCsrfHash' => $this->security->get_csrf_hash()
+            ];
+        }
         echo json_encode($response);
   } //end
 
