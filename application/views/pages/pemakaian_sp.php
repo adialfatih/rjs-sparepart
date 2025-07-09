@@ -192,6 +192,7 @@
                     var qrcode = $('#qrCodeScan').val();
                     var stokAsli = $('#stokAsli').val();
                     var jmlPakai = $('#jmlPakai').val();
+                    var tglPakai = $('#tglPakai').val();
                     var nmOpt = $('#nmOpt').val();
                     var nomc = $('#nomc').val();
                     var bekas = $('#bekas').val();
@@ -205,6 +206,7 @@
                             data: { "qrcode":qrcode,
                                 "stokAsli":stokAsli,
                                 "jmlPakai":jmlPakai,
+                                "tglPakai":tglPakai,
                                 "nmOpt":nmOpt,
                                 "nomc":nomc,
                                 "ket":ket,

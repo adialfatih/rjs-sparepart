@@ -764,10 +764,178 @@ class Data extends CI_Controller
                     </tr>
                 </table>
             </div>
+            <div id="tableRetur"></div>
+            <div style="width:100%;background:#ccc;display:flex;flex-direction:column;gap:5px;padding:15px;border-radius:4px;margin-bottom:15px;">
+                <input type="hidden" name="idrwytk" id="idrwytkid" value="<?=$id_tarik;?>">
+                <input type="hidden" name="iddetilpem" id="iddetilpemid" value="<?=$id_detilpem;?>">
+                <table>
+                    <tr>
+                        <td style="font-size:20px;" colspan="2">Input Retur</td>
+                    </tr>
+                    <tr>
+                        <td style="width:200px;">Jumlah Retur</td>
+                        <td><input type="number" style="width:300px;padding:10px;outline:none;border:1px solid #ccc;border-radius:4px;" placeholder="Masukan jumlah retur" id="jmlReturId"></td>
+                    </tr>
+                    <tr>
+                        <td style="width:200px;">Alasan Retur</td>
+                        <td><textarea style="width:100%;padding:10px;outline:none;border:1px solid #ccc;border-radius:4px;" placeholder="Masukan keterangan atau alasan retur item" id="textReturId"></textarea></td>
+                    </tr>
+                </table>
+            </div>
             <?php
         } else {
             echo "Token Error..!";
         }
+    }
+    function hapsPenarikan(){
+        $id             = $this->input->get('id', TRUE);
+        $inputanDari    = strtolower($this->input->get('inputanDari', TRUE));
+        $thislogin      = strtolower($this->session->userdata('nama'));
+        $akses          = strtolower($this->session->userdata('akses'));
+        if($thislogin == $inputanDari || $akses=="admin"){
+            $dt = $this->data_model->get_byid('riwayat_tarik', ['id_rwtyk'=>$id]);
+            if($dt->num_rows() == 1){
+                $codeinput = $dt->row("codeinput");
+                $id_detilpem = $dt->row("id_detilpem");
+                $cek = $this->data_model->get_byid("stok_sparepart_pakai",['codeinput'=>$codeinput])->num_rows();
+                if($cek == 0){
+                    $this->data_model->delete('stok_sparepart','codeinput', $codeinput);
+                    $this->data_model->delete('riwayat_tarik','id_rwtyk', $id);
+                    $this->data_model->updatedata('id_detilpem',$id_detilpem,'detil_pembelian',['lokasi'=>'Kantor']);
+                    $response = [
+                        'status' => 200,
+                        'message' => 'Stok yang ditarik di kembalikan ke kantor.'
+                    ];
+                } else {
+                    $response = [
+                        'status' => 500,
+                        'message' => 'Anda tidak bisa menghapus stok penarikan yang sudah terpakai.!'
+                    ];
+                }
+            } else {
+                $response = [
+                    'status' => 500,
+                    'message' => 'Generate token gagal.!'
+                ];
+            }
+        } else {
+            $response = [
+                'status' => 500,
+                'message' => 'Anda tidak bisa menghapus inputan dari '.ucfirst($inputanDari).''
+            ];
+        }
+        echo json_encode($response); 
+    } //end of function
+    function returPenarikan(){
+        $id1            = $this->input->get('id1', TRUE);
+        $id2            = $this->input->get('id2', TRUE);
+        $jml            = $this->input->get('jml', TRUE);
+        $txt            = $this->input->get('txt', TRUE);
+        $thislogin      = strtolower($this->session->userdata('nama'));
+        $cek = $this->data_model->get_byid('riwayat_tarik', ['id_rwtyk'=>$id1]);
+        if($cek->num_rows() == 1){
+            $codeinput = $cek->row("codeinput");
+            $cekReady  = $this->data_model->get_byid('stok_sparepart', ['codeinput'=>$codeinput])->num_rows();
+            if($jml<=$cekReady){
+                $stok_sp = $this->db->query("SELECT * FROM stok_sparepart WHERE codeinput='$codeinput' LIMIT $jml");
+                $allar = array();
+                foreach($stok_sp->result() as $val){
+                    $indata = "".$val->idstok."-".$val->kodesp."-".$val->qrcode."-".$val->codeinput."-".$val->lokasi."-".$val->penempatan."-".$val->harga_satuan."";
+                    $allar[] = $indata;
+                    $this->data_model->delete('stok_sparepart','idstok',$val->idstok);
+                }
+                $data_retur = implode(',', $allar);
+                $this->data_model->saved('riwayat_tarik_retur',[
+                    'id_rwtyk' => $id1,
+                    'tgl_input' => date('Y-m-d H:i:s'),
+                    'yg_input' => $thislogin,
+                    'jmlretur' => $jml,
+                    'keterangan' => $txt,
+                    'data_retur' => $data_retur
+                ]);
+                $response = [
+                    'status' => 200,
+                    'message' => 'Meretur '.$jml.' item'
+                ];
+            } else {
+                $response = [
+                    'status' => 500,
+                    'message' => 'Anda tidak bisa meretur sebanyak '.$jml.''
+                ];
+            }
+        } else {
+            $response = [
+                'status' => 500,
+                'message' => 'Anda tidak bisa menghapus inputan dari '.ucfirst($inputanDari).''
+            ];
+        }
+        echo json_encode($response);
+    } //end of function
+    function returPenarikandata(){
+        $id = $this->input->get('id', TRUE);
+        $cek = $this->data_model->get_byid('riwayat_tarik_retur',['id_rwtyk'=>$id]);
+        if($cek->num_rows() > 0){
+            ?>
+            <div style="width:100%;background:#ccc;display:flex;flex-direction:column;gap:5px;padding:15px;border-radius:4px;margin-bottom:15px;">
+                <table>
+                    <tr>
+                        <td style="font-size:20px;" colspan="6">Data Retur</td>
+                    </tr>
+                    <tr>
+                        <td>No</td>
+                        <td>Tanggal</td>
+                        <td>Retur</td>
+                        <td>Keterangan</td>
+                        <td>Yang Retur</td>
+                        <td></td>
+                    </tr>
+                    <?php
+                    $no=1;
+                    foreach($cek->result() as $t){
+                        echo "<tr>";
+                        echo "<td>".$no."</td>";
+                        echo "<td>".date('d M Y', strtotime($t->tgl_input))."</td>";
+                        echo "<td>".$t->jmlretur."</td>";
+                        echo "<td>".$t->keterangan."</td>";
+                        echo "<td>".$t->yg_input."</td>";
+                        ?>
+                        <td><a href="javascript:void(0);" onclick="hpsReturan('<?=$t->id_rtr;?>','<?=$t->id_rwtyk;?>')" style="text-decoration:none;color:red;">Hapus</a></td>
+                        <?php
+                        echo "</tr>";
+                        $no++;
+                    }
+                    ?>
+                </table>
+            </div>
+            <?php
+        } else {
+            echo "";
+        }
+    }
+    function btlRetur(){
+        $id = $this->input->get('id', TRUE);
+        $cek = $this->data_model->get_byid('riwayat_tarik_retur',['id_rtr'=>$id])->row_array();
+        $list = $cek['data_retur'];
+        $x = explode(',', $list);
+        for ($i=0; $i <count($x) ; $i++) { 
+            $xx = explode('-', $x[$i]);
+            $this->data_model->saved('stok_sparepart',[
+                'idstok' => $xx[0],
+                'kodesp' => $xx[1],
+                'qrcode' => $xx[2],
+                'codeinput' => $xx[3],
+                'lokasi' => $xx[4],
+                'penempatan' => $xx[5],
+                'harga_satuan' => $xx[6]
+            ]);
+        }
+        $this->data_model->delete('riwayat_tarik_retur','id_rtr',$id);
+        $response = [
+                'status' => 200,
+                'message' => 'Mengembalikan barang ke stok sparepart'
+        ];
+        
+        echo json_encode($response);
     }
 }
 ?>

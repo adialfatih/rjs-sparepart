@@ -79,12 +79,12 @@
                         <span>Laporan</span>
                         <span class="material-icons submenu-arrow">chevron_right</span>
                     </div>
-                    <ul class="submenu">
+                    <ul class="submenu <?=$navigasi=='pemakaian' ? 'show':'';?>">
                         <li class="menu-item">
-                            <a href="#" class="menu-link">Laporan Bulanan</a>
+                            <a href="<?=base_url('pemakaian/sp');?>" class="menu-link <?=$navigasi2=='sp' ? 'active':'';?>">Pemakaian Spinning</a>
                         </li>
                         <li class="menu-item">
-                            <a href="#" class="menu-link">Laporan Tahunan</a>
+                            <a href="<?=base_url('pemakaian/wv');?>" class="menu-link <?=$navigasi2=='wv' ? 'active':'';?>">Pemakaian Weaving</a>
                         </li>
                         <li class="menu-item">
                             <a href="#" class="menu-link">Laporan Sparepart</a>

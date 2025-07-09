@@ -432,6 +432,7 @@
             });
             
         });
+    
     const qrcodeResult22 = document.getElementById("qrcodeResult");
     const qrcodeResult23 = document.getElementById("qrcode");
     const reader = new Html5Qrcode("reader");
@@ -461,6 +462,7 @@
             console.error("Camera start failed", err);
         });
     });
+    
     function viewDetil(id){
         $('#modalDetilBody').html('Loading...');
         $('#addSparepartModal221').addClass('show');
@@ -470,19 +472,142 @@
             data: { "id":id },
             success: function(response) {
                 $('#modalDetilBody').html(response);
+                loadRetur(id);
             },
             error: function(xhr, status, error) {
                     console.log(''+error);
                     console.log(''+xhr);
                     console.log(''+status);
                 }
-            });
+        });
         
         //addSparepartModal.classList.add('show');
     }
     function closeModal(mdl){ $('#'+mdl+'').removeClass('show');}
     function hapusProsesTarik(inputanDari, id){
+        //Swal.fire('oke di klik'+inputanDari+' - '+id);
+        Swal.fire({
+        title: "Hapus proses tarik ?",
+        text: "Ini akan mengembalikan posisi item barang ke kantor",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Hapus"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '<?=base_url("data/hapsPenarikan"); ?>',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: { "id":id, "inputanDari":inputanDari },
+                    success: function(response) {
+                        if(response.status == 200){
+                            Swal.fire('Berhasil Hapus!', response.message, 'success');
+                        } else {
+                            Swal.fire('Gagal Hapus!', response.message, 'error');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                            console.log(''+error);
+                            console.log(''+xhr);
+                            console.log(''+status);
+                        }
+                });
+            }
+        });
         
+    }
+    function testReturn(){
+        var id1 = document.getElementById('idrwytkid').value;
+        var id2 = document.getElementById('iddetilpemid').value;
+        var jml = document.getElementById('jmlReturId').value;
+        var txt = document.getElementById('textReturId').value;
+        if(id1!='' && id2!='' && jml!='' && txt!=''){
+            Swal.fire({
+            title: "Retur Item ?",
+            text: "Anda akan meretur "+jml+" item ke admin",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Retur"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '<?=base_url("data/returPenarikan"); ?>',
+                        type: 'GET',
+                        dataType: 'json',
+                        data: { "id1":id1, "id2":id2, "jml":jml, "txt":txt },
+                        success: function(response) {
+                            if(response.status == 200){
+                                Swal.fire('Berhasil Retur!', response.message, 'success');
+                                loadRetur(id1);
+                                document.getElementById('jmlReturId').value = '';
+                                document.getElementById('textReturId').value = '';
+                            } else {
+                                Swal.fire('Gagal Retur!', response.message, 'error');
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.log(''+error);
+                            console.log(''+xhr);
+                            console.log(''+status);
+                        }
+                    });
+                }
+            });
+        } else {
+            Swal.fire('Peringatan .! ', 'Anda harus mengisi semua data.', 'info');
+        }
+    }
+    function loadRetur(id){
+        $.ajax({
+            url: '<?=base_url("data/returPenarikandata"); ?>',
+            type: 'GET',
+            data: { "id":id },
+            success: function(response) {
+                $('#tableRetur').html(response);
+            },
+            error: function(xhr, status, error) {
+                console.log(''+error);
+                console.log(''+xhr);
+                console.log(''+status);
+            }
+        });
+    }
+    function hpsReturan(id,id2){
+        Swal.fire({
+        title: "Batalkan Retur ?",
+        text: "Item akan kembali masuk ke stok sparepart",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Ya"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '<?=base_url("data/btlRetur"); ?>',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: { "id":id },
+                    success: function(response) {
+                        if(response.status == 200){
+                            Swal.fire('Berhasil Hapus!', response.message, 'success');
+                        } else {
+                            Swal.fire('Gagal Hapus!', response.message, 'error');
+                        }
+                        loadRetur(id2);
+                    },
+                    error: function(xhr, status, error) {
+                            console.log(''+error);
+                            console.log(''+xhr);
+                            console.log(''+status);
+                        }
+                });
+            }
+        });
     }
     </script>
 </body>

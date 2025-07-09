@@ -23,6 +23,10 @@
                             <span class="material-icons">add_circle</span>
                             <span>Tambah Stok</span>
                         </button>
+                        <button class="btn btn-outline btn-sm" onclick="addStokManual()">
+                            <span class="material-icons">add_circle</span>
+                            <span>Tambah Stok</span>
+                        </button>
                     </div>
                 </div>
                 

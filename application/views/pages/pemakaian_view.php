@@ -1,5 +1,5 @@
 <?php
-            if($navigasi2=="tariksp"){
+            if($navigasi2=="sp"){
                 $tujuan_untuk = "Spinning";
             } else {
                 $tujuan_untuk = "Weaving";
@@ -7,13 +7,13 @@
             ?>
         <main class="main-content">
             <div class="page-header">
-                <h1 class="page-title">Riwayat Penarikan</h1>
+                <h1 class="page-title">Riwayat Pemakaian</h1>
                 <div class="breadcrumb">
                     <a href="#">Sparepart</a>
                     <span class="material-icons separator">chevron_right</span>
                     <span>Riwayat</span>
                     <span class="material-icons separator">chevron_right</span>
-                    <span><?=$tujuan_untuk;?></span>
+                    <span>Pemakaian</span>
                 </div>
             </div>
             
@@ -22,8 +22,8 @@
             <div class="table-container">
                 <div class="table-header">
                     <div>
-                        <h3 class="table-title">Riwayat Penarikan Sparepart</h3>
-                        <small>Menampikan data riwayat penarikan sparepart untuk gudang <?=$tujuan_untuk;?>.</small>
+                        <h3 class="table-title">Riwayat Pemakaian <?=$tujuan_untuk;?></h3>
+                        <small>Menampikan data riwayat pemakaian sparepart untuk departement <?=$tujuan_untuk;?>.</small>
                     </div>
                     
                 </div>
@@ -32,12 +32,13 @@
                     <thead>
                         <tr>
                             <th>No</th>
-                            <th>Tanggal Tarik</th>
-                            <th>User</th>
-                            <th>Kategori</th>
-                            <th>Nama Sparepart</th>
+                            <th>Tanggal</th>
+                            <th>Operator</th>
+                            <th>Sparepart</th>
+                            <th>Kode</th>
                             <th>Jumlah</th>
-                            <th>Satuan</th>
+                            <th>Mesin</th>
+                            <th>Bekas</th>
                             <th>#</th>
                         </tr>
                     </thead>
@@ -62,13 +63,13 @@
     <input type="hidden" id="csrf_token_name" value="<?= $this->security->get_csrf_token_name(); ?>">
 	<input type="hidden" id="csrf_token_value" value="<?= $this->security->get_csrf_hash(); ?>">
     <!-- Add Sparepart Modal (Large) -->
-    <div class="modal-overlay" id="addSparepartModal221">
+    <div class="modal-overlay" id="addSparepartModal">
         <div class="modal modal-lg">
             <div class="modal-header">
                 <div>
-                    <h3 class="modal-title">Detail Penarikan</h3>
+                    <h3 class="modal-title">Detail Pemakaian</h3>
                 </div>
-                <button class="modal-close" id="closeAddModal" onclick="closeModal('addSparepartModal221')">&times;</button>
+                <button class="modal-close" id="closeAddModal" onclick="closeModal('addSparepartModal')">&times;</button>
             </div>
             <div class="modal-body" id="modalDetilBody">
                 <div style="width:100%;background:#ccc;display:flex;flex-direction:column;gap:5px;padding:15px;border-radius:4px;margin-bottom:15px;">
@@ -80,8 +81,7 @@
                 
             </div>
             <div class="modal-footer">
-                <button class="btn btn-danger" id="clickRetrun" onclick="testReturn()">Return</button>
-                <button class="btn btn-outline" id="cancelAddModal" onclick="closeModal('addSparepartModal221')">Tutup</button>
+                <button class="btn btn-outline" id="cancelAddModal" onclick="closeModal('addSparepartModal')">Tutup</button>
             </div>
         </div>
     </div>

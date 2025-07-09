@@ -73,6 +73,25 @@ class Showpage extends CI_Controller
         $this->load->view('pages/user_view', $data); 
         $this->load->view('part/main_js4', $data);
   }
+  function pemakaian(){ 
+        $akses = $this->session->userdata('akses');
+        $uri = $this->uri->segment(2);
+        $data = array(
+            'title'         => 'Pemakaian Sparepart',
+            'sess_id'       => $this->session->userdata('id'),
+            'sess_nama'     => $this->session->userdata('nama'),
+            'sess_user'     => $this->session->userdata('username'),
+            'sess_pass'     => $this->session->userdata('password'),
+            'sess_akses'    => $akses,
+            'navigasi'      => 'pemakaian',
+            'navigasi2'     => $uri
+        );
+        if($akses == "satpam"){ $this->load->view('pages/pemakaian_awal'); } else {
+        $this->load->view('part/main_header', $data);
+        $this->load->view('part/left_nav', $data);
+        $this->load->view('pages/pemakaian_view', $data); 
+        $this->load->view('part/main_js5', $data); }
+  } //end
   
     
 }

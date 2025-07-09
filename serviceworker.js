@@ -1,46 +1,44 @@
-const cacheVersion = 'rjsStorage';
+const CACHE_NAME = "rjs-sparepart-v1";
+const OFFLINE_URL = "offline.html";
 
-const filesToCache = [
-  
-  '/',
-  
-  //----------JavaScripts----------//
-  
-  '/assets/vendors/scripts/core.js',
-  '/assets/vendors/scripts/script.min.js',
-  '/assets/vendors/scripts/process.js',
-  '/assets/vendors/scripts/layout-settings.js',
-
-  //----------CSS----------//
-  //themes
-  
-  '/assets/vendors/styles/core.css',
-  '/assets/vendors/styles/style.css',
-  '/assets/vendors/styles/icon-font.min.css',
-  '/new_db/style.css'
-
+const urlsToCache = [
+  "/login_form2.php",
+  "/offline.html",
+  "/assets/logo-512.png"
 ];
 
-self.addEventListener('install', function(event) {
+self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(cacheVersion)
-      .then(function(cache) {
-        return cache.addAll(filesToCache)
-      })
-  )
+    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
+  );
+});
+
+self.addEventListener("fetch", event => {
+  if (event.request.mode === "navigate") {
+    event.respondWith(
+      fetch(event.request).catch(() =>
+        caches.match(OFFLINE_URL)
+      )
+    );
+  } else {
+    event.respondWith(
+      caches.match(event.request).then(response =>
+        response || fetch(event.request)
+      )
+    );
+  }
 });
 
 self.addEventListener("activate", event => {
-  console.log("Service worker activated");
-});
-
-self.addEventListener('fetch', function(event) {
-  event.respondWith(
-    caches.match(event.request)
-      .then(function(res) {
-        if (res) return res;
-
-        return fetch(event.request);
-      })
+  event.waitUntil(
+    caches.keys().then(keyList =>
+      Promise.all(
+        keyList.map(key => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
+        })
+      )
+    )
   );
 });

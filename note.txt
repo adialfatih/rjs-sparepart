@@ -66,3 +66,4 @@ CREATE TABLE `table_cetak` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 add table riwayat_nambah_stok
+edit nota pembelian jumlah pcs nya

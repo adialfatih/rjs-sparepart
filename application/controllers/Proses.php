@@ -125,6 +125,8 @@ class Proses extends CI_Controller
                     <?php } else { ?>
                     <span style="color:red;">Sisa Stok : <strong><?=$jml_stok;?></strong> <?=$pcs;?></span>
                     <?php } ?>
+                    <label for="tglPakai" style="margin-top:15px;">Tanggal Pemakaian</label>
+                    <input type="date" class="iptform" placeholder="Masukan Tanggal Pemakaian" id="tglPakai" value="<?=date('Y-m-d');?>">
                     <label for="jmlPakai" style="margin-top:15px;">Jumlah Pengambilan</label>
                     <input type="number" class="iptform" placeholder="Masukan jumlah yang di ambil" id="jmlPakai">
                     <label for="nmOpt">Nama Operator</label>
@@ -158,6 +160,12 @@ class Proses extends CI_Controller
         $qrcode     = trim($this->input->get('qrcode', TRUE));
         $stokAsli   = trim($this->input->get('stokAsli', TRUE));
         $jmlPakai   = trim($this->input->get('jmlPakai', TRUE));
+        $tglPakai   = trim($this->input->get('tglPakai', TRUE));
+        if($tglPakai == "null"){
+            $newTgl = date('Y-m-d H:i:s');
+        } else {
+            $newTgl = $tglPakai." ".date('H:i:s')."";
+        }
         $nmOpt      = trim($this->input->get('nmOpt', TRUE));
         $nomc       = trim($this->input->get('nomc', TRUE));
         $dep        = trim($this->input->get('dep', TRUE));
@@ -178,7 +186,7 @@ class Proses extends CI_Controller
             if($jmlPakai>0 && $jmlPakai <= $stokAsli && $jmlPakai <= $jmlOnStok){
                 $kode_SP = $this->db->query("SELECT kodesp,qrcode FROM stok_sparepart WHERE qrcode='$qrcode' LIMIT 1")->row("kodesp");
                 $this->data_model->saved('riwayat_pemakaian',[
-                    'tanggal_pakai' => date('Y-m-d H:i:s'),
+                    'tanggal_pakai' => $newTgl,
                     'user_login'    => $username,
                     'departement'   => $dep,
                     'kodesp'        => $kode_SP,

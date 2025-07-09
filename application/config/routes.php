@@ -30,6 +30,12 @@ $route['proses-simpan-pemakaian'] = 'proses/save_pemakaian';
 $route['gudang/stok/spinning'] = 'beranda/stoksp';
 $route['gudang/stok/weaving'] = 'beranda/stokwv';
 
+$route['pemakaian/sp'] = 'showpage/pemakaian';
+$route['pemakaian/wv'] = 'showpage/pemakaian';
+$route['data-pemakaian'] = 'data2/pemakaian';
+$route['data-hapus-pakai'] = 'data2/hpspakai';
+$route['detil-pemakaian'] = 'data2/showpakai';
+
 $route['cetak/code/(:any)/(:any)'] = 'nota/qrcode';
 
 
