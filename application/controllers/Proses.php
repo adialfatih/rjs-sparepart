@@ -187,6 +187,7 @@ class Proses extends CI_Controller
                 $kode_SP = $this->db->query("SELECT kodesp,qrcode FROM stok_sparepart WHERE qrcode='$qrcode' LIMIT 1")->row("kodesp");
                 $this->data_model->saved('riwayat_pemakaian',[
                     'tanggal_pakai' => $newTgl,
+                    'tanggal_input' => date('Y-m-d H:i:s'),
                     'user_login'    => $username,
                     'departement'   => $dep,
                     'kodesp'        => $kode_SP,
@@ -197,7 +198,7 @@ class Proses extends CI_Controller
                     'operator'      => $nmOpt,
                     'keterangan'    => $ket,
                     'balik_sp'      => $bekas,
-                    'jml_balik_sp'  => $bekas==0 ? '0':$jmlitembekas
+                    'jml_balik_sp'  => $bekas=='null' ? '0':$jmlitembekas
                 ]);
                 $all_pakai = $this->db->query("SELECT * FROM stok_sparepart WHERE qrcode='$qrcode' ORDER BY idstok LIMIT $jmlPakai");
                 foreach($all_pakai->result() as $val){

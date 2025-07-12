@@ -23,9 +23,9 @@
                             <span class="material-icons">add_circle</span>
                             <span>Tambah Stok</span>
                         </button>
-                        <button class="btn btn-outline btn-sm" onclick="addStokManual()">
-                            <span class="material-icons">add_circle</span>
-                            <span>Tambah Stok</span>
+                        <button class="btn btn-outline btn-sm">
+                            <span class="material-icons">bookmark</span>
+                            <span>Sparepart Kosong</span>
                         </button>
                     </div>
                 </div>
@@ -158,6 +158,22 @@
             <div class="modal-footer">
                 <button class="btn btn-outline" id="cancelAddModal">Batal</button>
                 <button class="btn btn-primary" onclick="simpanManual()">Simpan</button>
+            </div>
+        </div>
+    </div>
+    <div class="modal-overlay" id="modalQR">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <div>
+                    <h3 class="modal-title">Menampilkan QR Code</h3>
+                </div>
+                <button class="modal-close" onclick="closemodal('modalQR')">&times;</button>
+            </div>
+            <div class="modal-body" id="idtoShowQR">
+                
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closemodal('modalQR')">Tutup</button>
             </div>
         </div>
     </div>

@@ -62,6 +62,8 @@ class Data2 extends CI_Controller
         if($ck->num_rows() == 1){
             $kdsp = $ck->row("kodesp");
             $codepakai = $ck->row("codepakai");
+            $ti = $ck->row("tanggal_input");
+            $lg = $ck->row("user_login");
             $spr = $this->data_model->get_byid('table_sparepart',['kodesp'=>$kdsp])->row_array();
             ?>
             <table>
@@ -147,7 +149,13 @@ class Data2 extends CI_Controller
                         </table>
                     </td>
                 </tr>
+                
                 <?php } ?>
+                <tr>
+                    <td colspan="2" style="font-size:12px;text-align:right;">
+                        Di input oleh : <strong><?=ucwords($lg);?></strong> tanggal <strong><?=date('d M Y', strtotime($ti));?></strong> jam <strong><?=date('H:i', strtotime($ti));?></strong>
+                    </td>
+                </tr>
             </table>
             <?php
         } else {
@@ -172,6 +180,8 @@ class Data2 extends CI_Controller
                 ]);
             }
             $this->data_model->delete('stok_sparepart_pakai','codepakai',$codepakai);
+            $this->data_model->delete('stok_sparepart_rusak','codepakai',$codepakai);
+            $this->data_model->delete('stok_sparepart_bekas','codepakai',$codepakai);
             $this->data_model->delete('riwayat_pemakaian','id_rwytpakai',$id);
             $response = [
                 'status' => 200,
@@ -184,6 +194,27 @@ class Data2 extends CI_Controller
             ];
         }
         echo json_encode($response);
+    }
+    function showqrthis(){
+        $kdsp = $this->input->get('kdsp', TRUE);
+        $barcode = $this->db->query("SELECT DISTINCT qrcode FROM stok_sparepart WHERE kodesp='$kdsp'");
+        if($barcode->num_rows() == 1){
+            $showQR = $barcode->row("qrcode");
+            ?>
+            <div style="width:100%;display:flex;justify-content:center;align-items:center;flex-direction:column;gap:5px;">
+                <img src="<?=base_url('public/qrcode/qr_'.$showQR.'.png');?>" alt="Scan Code">
+                <span style="font-size:20px;"><?=$showQR;?></span>
+            </div>
+            <?php
+        } else {
+            //$showQR = "Ada ".$barcode->num_rows()." Kode";
+            echo '<div style="width:100%;display:flex;justify-content:center;align-items:center;flex-direction:column;gap:15px;">';
+            foreach($barcode->result() as $val){
+                $showQR = $val->qrcode;
+                ?><div style="width:100%;display:flex;justify-content:center;align-items:center;flex-direction:column;gap:5px;"><img src="<?=base_url('public/qrcode/qr_'.$showQR.'.png');?>" alt="Scan Code <?=$showQR;?>"><span style="font-size:20px;"><?=$showQR;?></span></div><?php
+            }
+            echo '</div>';
+        }
     }
 }
 ?>

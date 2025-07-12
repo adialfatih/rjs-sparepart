@@ -186,7 +186,7 @@
                 confirmButtonColor: "#3085d6",
                 cancelButtonColor: "#d33",
                 confirmButtonText: "Simpan",
-                canlcelButtonText: "Batal"
+                cancelButtonText: "Batal"
                 }).then((result) => {
                 if (result.isConfirmed) {
                     var qrcode = $('#qrCodeScan').val();

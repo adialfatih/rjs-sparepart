@@ -611,16 +611,20 @@ class Data extends CI_Controller
         if($show=="stoksp"){
             $initial_kode = "SP";
             $record = $this->db->query("SELECT * FROM `table_sparepart` WHERE kodesp IN (SELECT kodesp FROM stok_sparepart WHERE lokasi='Spinning')");
+            $record2 = $this->db->query("SELECT * FROM `table_sparepart` WHERE kodesp NOT IN (SELECT kodesp FROM stok_sparepart WHERE lokasi='Spinning') AND depart IN ('all','Spinning')");
+            $lokasi = "Spinning";
         } else {
             $initial_kode = "WV";
             $record = $this->db->query("SELECT * FROM `table_sparepart` WHERE kodesp IN (SELECT kodesp FROM stok_sparepart WHERE lokasi='Weaving')");
+            $record2 = $this->db->query("SELECT * FROM `table_sparepart` WHERE kodesp NOT IN (SELECT kodesp FROM stok_sparepart WHERE lokasi='Weaving') AND depart IN ('all','Weaving')");
+            $lokasi = "Weaving";
         }
         if($record->num_rows() > 0){
             $no=1;
             foreach ($record->result() as $key => $value) {
                 $kdsp = $value->kodesp;
                 $jml_stok = $this->db->query("SELECT COUNT(idstok) AS jml FROM stok_sparepart WHERE kodesp='$kdsp'")->row("jml");
-                $barcode = $this->db->query("SELECT DISTINCT qrcode FROM stok_sparepart WHERE kodesp='$kdsp'");
+                $barcode = $this->db->query("SELECT DISTINCT qrcode FROM stok_sparepart WHERE kodesp='$kdsp' AND lokasi='$lokasi'");
                 if($barcode->num_rows() == 1){
                     $showQR = $barcode->row("qrcode");
                 } else {
@@ -630,11 +634,19 @@ class Data extends CI_Controller
                 echo "<tr>";
                 echo "<td>".$no."</td>";
                 echo "<td>".$value->kategori_sp."</td>";
-                echo "<td>".$value->nama_sparepart."</td>";
+                ?>
+                <td>
+                    <a href="javascript:void(0);" style="text-decoration:none;font-weight:bold;color:blue;" onclick="showToUpdate('<?=$kdsp;?>')"><?=$value->nama_sparepart;?></a>
+                </td>
+                <?php
+                //echo "<td>".$value->nama_sparepart."</td>";
                 echo "<td>".number_format($jml_stok)."</td>";
                 echo "<td>".$value->satuan_pemakaian."</td>";
-                echo "<td>".$showQR."</td>";
+                //echo "<td>".$showQR."</td>";
                 ?>
+                <td>
+                    <a href="javascript:void(0);" style="text-decoration:none;font-weight:bold;color:blue;" onclick="showqr('<?=$kdsp;?>')"><?=$showQR;?></a>
+                </td>
                 <td>
                     <a href="javascript:void(0);" style="text-decoration:none;" class="btn btn-primary" onclick="saveAndPrint('<?=$initial_kode;?>','<?=$kdsp;?>')">
                         Cetak Barcode <?=$counting>0 ? '('.$counting.')':'';?>
@@ -643,8 +655,40 @@ class Data extends CI_Controller
                 <?php
                 echo "</tr>";
                 $no++;
-                
             }
+            foreach ($record2->result() as $key => $value2) {
+                $kdsp = $value2->kodesp;
+                $jml_stok = $this->db->query("SELECT COUNT(idstok) AS jml FROM stok_sparepart WHERE kodesp='$kdsp'")->row("jml");
+                $barcode = $this->db->query("SELECT DISTINCT qrcode FROM stok_sparepart WHERE kodesp='$kdsp' AND lokasi='$lokasi'");
+                if($barcode->num_rows() == 1){
+                    $showQR = $barcode->row("qrcode");
+                } else {
+                    $showQR = "";
+                }
+                $counting = $this->db->query("SELECT file_name FROM table_cetak WHERE file_name LIKE '%$kdsp%'")->num_rows();
+                echo "<tr>";
+                echo "<td>".$no."</td>";
+                echo "<td>".$value2->kategori_sp."</td>";
+                ?>
+                <td>
+                    <a href="javascript:void(0);" style="text-decoration:none;font-weight:bold;color:blue;" onclick="showToUpdate('<?=$kdsp;?>')"><?=$value2->nama_sparepart;?></a>
+                </td>
+                <?php
+                //echo "<td>".$value2->nama_sparepart."</td>";
+                echo "<td>".number_format($jml_stok)."</td>";
+                echo "<td>".$value2->satuan_pemakaian."</td>";
+                //echo "<td>".$showQR."</td>";
+                ?>
+                <td>
+                    <a href="javascript:void(0);" style="text-decoration:none;font-weight:bold;color:blue;" onclick="showqr('<?=$kdsp;?>')"><?=$showQR;?></a>
+                </td>
+                <td>
+                </td>
+                <?php
+                echo "</tr>";
+                $no++;
+            }
+            
         }
     } //end
 

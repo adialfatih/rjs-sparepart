@@ -137,7 +137,21 @@
         addSparepartModal.classList.add('show');
     }
         
-            
+    function showqr(kdsp){
+        $.ajax({
+            url:"<?=base_url('data2/showqrthis');?>",
+            type: "GET",
+            data: {"kdsp":kdsp},
+            cache: false,
+            success: function(dataResult){
+                $('#modalQR').addClass('show');
+                $('#idtoShowQR').html(dataResult);
+            }
+        });
+    }
+    function closemodal(mdl){
+        $('#'+mdl+'').removeClass('show');
+    }
     const qrcodeResult22 = document.getElementById("qrcodeResult");
     const qrcodeResult23 = document.getElementById("qrcode");
     const reader = new Html5Qrcode("reader");
